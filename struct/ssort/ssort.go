@@ -1,0 +1,166 @@
+package ssort
+
+// BubbleSort 冒泡排序
+func BubbleSort(list []int, cmp func(i, j int) bool) {
+	flag := true
+	for i := 0; i < len(list); i++ {
+		flag = true
+		for j := len(list) - 2; j >= i; j-- { //从后往前冒泡
+			if !cmp(j, j+1) {
+				flag = false
+				list[j], list[j+1] = list[j+1], list[j]
+			}
+		}
+		if flag == true {
+			return
+		}
+	}
+}
+
+// SelectSort 选择排序
+func SelectSort(list []int, cmp func(i, j int) bool) {
+	n := len(list)
+	for i := 0; i < n/2; i++ {
+		minIndex, maxIndex := i, i
+		for j := i + 1; j < n-i; j++ {
+			if cmp(maxIndex, j) {
+				maxIndex = j
+				continue
+			}
+			if !cmp(minIndex, j) {
+				minIndex = j
+			}
+		}
+		if maxIndex == i && minIndex != n-i-1 {
+			// 如果最大值是开头的元素，而最小值不是最尾的元素
+			// 先将最大值和最尾的元素交换
+			list[n-i-1], list[maxIndex] = list[maxIndex], list[n-i-1]
+			// 然后最小的元素放在最开头
+			list[i], list[minIndex] = list[minIndex], list[i]
+		} else if maxIndex == i && minIndex == n-i-1 {
+			// 如果最大值在开头，最小值在结尾，直接交换
+			list[minIndex], list[maxIndex] = list[maxIndex], list[minIndex]
+		} else {
+			// 否则先将最小值放在开头，再将最大值放在结尾
+			list[i], list[minIndex] = list[minIndex], list[i]
+			list[n-i-1], list[maxIndex] = list[maxIndex], list[n-i-1]
+		}
+	}
+}
+
+// InsertSort 插入排序
+func InsertSort(list []int, cmp func(i, j int) bool) {
+	n := len(list)
+	// 进行 N-1 轮迭代
+	for i := 1; i <= n-1; i++ {
+		deal := list[i] // 待排序的数
+		j := i - 1      // 待排序的数左边的第一个数的位置
+		// 如果第一次比较，比左边的已排好序的第一个数小，那么进入处理
+		if cmp(deal, list[j]) {
+			// 一直往左边找，比待排序大的数都往后挪，腾空位给待排序插入
+			for ; j >= 0 && cmp(deal, list[j]); j-- {
+				list[j+1] = list[j] // 某数后移，给待排序留空位
+			}
+			list[j+1] = deal // 结束了，待排序的数插入空位
+		}
+	}
+}
+
+// ShellSort 希尔排序
+func ShellSort(list []int, cmp func(i, j int) bool) {
+	// 数组长度
+	n := len(list)
+
+	// 每次减半，直到步长为 1
+	for step := n / 2; step >= 1; step /= 2 {
+		// 开始插入排序，每一轮的步长为 step
+		for i := step; i < n; i += step {
+			for j := i - step; j >= 0; j -= step {
+				// 满足插入那么交换元素
+				if cmp(list[j+step], list[j]) {
+					list[j], list[j+step] = list[j+step], list[j]
+					continue
+				}
+				break
+			}
+		}
+	}
+}
+
+// MergeSort 归并排序
+func MergeSort(array []int, begin int, end int) {
+	//至少有两个元素,进入排序
+	if end-begin > 1 {
+		mid := begin + (end-begin)/2
+		MergeSort(array, begin, mid)
+		MergeSort(array, mid, len(array))
+		merge(array, begin, mid, end)
+	}
+}
+
+func merge(array []int, begin int, mid int, end int) {
+	leftSize := mid - begin
+	rightSize := end - mid
+	tmpSlice := make([]int, 0, leftSize+rightSize)
+	l, r := 0, 0
+	for l < leftSize && r < rightSize {
+		lValue, rValue := array[l+begin], array[r+mid]
+		if lValue > rValue {
+			tmpSlice = append(tmpSlice, rValue)
+			r++
+		} else {
+			tmpSlice = append(tmpSlice, lValue)
+			l++
+		}
+	}
+	tmpSlice = append(tmpSlice, array[l+begin:mid]...)
+	tmpSlice = append(tmpSlice, array[r+mid:end]...)
+	for i := begin; i < end; i++ {
+		array[i] = tmpSlice[i-begin]
+	}
+}
+
+// MergeSort2 非递归
+func MergeSort2(array []int, begin int, end int) {
+	//步长从1开始
+	step := 1
+	for end-begin > step {
+		for i := begin; i < end; i += step << 1 { //每次找到两个合并部分
+			lo := i
+			mid := lo + step
+			ro := mid + step
+			if mid > end { //不到一个的范围就break
+				break
+			}
+			if ro > end {
+				ro = end
+			}
+			merge(array, lo, mid, ro)
+		}
+		step <<= 1
+	}
+}
+
+// QSort 快排
+func QSort(array []int, low, high int, cmp func(a, b int) bool) {
+	i, j := low, high
+	if low >= high {
+		return
+	}
+	k := array[low]
+	for low < high {
+		for ; low < high && !cmp(k, array[high]); high-- {
+		}
+		if cmp(k, array[high]) {
+			array[low] = array[high]
+		}
+		for ; low < high && cmp(k, array[low]); low++ {
+		}
+		if !cmp(k, array[low]) {
+			array[high] = array[low]
+		}
+	}
+	array[low] = k
+	QSort(array, i, low-1, cmp)
+	QSort(array, low+1, j, cmp)
+}
