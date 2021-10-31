@@ -8,9 +8,9 @@ import (
 )
 
 var db = map[string]string{
-	"Tom":  "630",
-	"Jack": "589",
-	"Sam":  "567",
+	"Tom":  "1",
+	"Jack": "2",
+	"Sam":  "3",
 }
 
 //创建缓存组
@@ -39,6 +39,7 @@ func main() {
 	}
 	//创建缓存组
 	group := createGroup()
+	fmt.Println(group.Get("Tom"))
 	//开启辅助端口
 	if api {
 		go group.StartServer(apiAddr, "/api", "key")

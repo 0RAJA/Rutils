@@ -5,24 +5,12 @@ import (
 	"testing"
 )
 
-var set *Set
-
-func testNewSet(t *testing.T) {
-	set = NewSet(-1)
-}
-
-func testSetAdd(t *testing.T) {
+func TestNewSet(t *testing.T) {
+	set := NewSet(-1)
 	set.Add(1)
 	set.Add(2)
 	set.Add(2)
-}
-
-func testSetList(t *testing.T) {
-	fmt.Println(set.List())
-}
-
-func TestNewSet(t *testing.T) {
-	t.Run("", testNewSet)
-	t.Run("", testSetAdd)
-	t.Run("", testSetList)
+	fmt.Println(set.Len())
+	fmt.Println(set.Has(3))
+	fmt.Println(set.Has(2))
 }
