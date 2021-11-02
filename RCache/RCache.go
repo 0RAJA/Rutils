@@ -2,7 +2,7 @@ package RCache
 
 import (
 	"Rutils/RCache/RErr"
-	"Rutils/RCache/singleflight"
+	"Rutils/RSync/singleflight"
 	"fmt"
 	"log"
 	"net/http"
