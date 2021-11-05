@@ -2,6 +2,7 @@ package huffmanTree
 
 import (
 	"math"
+	"sort"
 )
 
 type HFMNode struct {
@@ -14,6 +15,7 @@ type HFMTree struct {
 	tree   []*HFMNode
 	code   map[rune]string
 	weight map[rune]int
+	rs     []rune
 }
 
 func searchMin(list []*HFMNode, length int) (int, int) {
@@ -23,12 +25,13 @@ func searchMin(list []*HFMNode, length int) (int, int) {
 		if list[i].parent != 0 {
 			continue
 		}
-		if min1 > list[i].weight {
-			min1 = list[i].weight
-			index1 = i
-		} else if min2 > list[i].weight {
-			min2 = list[i].weight
-			index2 = i
+		if min2 > list[i].weight {
+			t1, t2 := list[i].weight, i
+			if min1 > list[i].weight {
+				t1, t2 = min1, index1
+				min1, index1 = list[i].weight, i
+			}
+			min2, index2 = t1, t2
 		}
 	}
 	return index1, index2
@@ -56,18 +59,35 @@ func (t *HFMTree) searchCode(c rune) (ret string) {
 }
 
 func NewHFMTree(str string) (tree *HFMTree) {
-	tree = &HFMTree{code: map[rune]string{}, weight: map[rune]int{}}
+	weight := make(map[rune]int)
+	rs := make([]rune, 0)
 	for _, v := range str {
-		tree.weight[v]++
+		if weight[v] == 0 {
+			rs = append(rs, v)
+		}
+		weight[v]++
 	}
+	return NewHFMTreeWithWright(weight, rs)
+}
+
+func NewHFMTreeWithWright(weight map[rune]int, rs []rune) (tree *HFMTree) {
+	tree = &HFMTree{code: map[rune]string{}, weight: weight, rs: rs}
+	sort.Slice(tree.rs, func(i, j int) bool {
+		return tree.rs[i] < tree.rs[j]
+	})
 	tree.tree = make([]*HFMNode, 2*len(tree.weight))
 	m := 1
-	for c, v := range tree.weight {
-		tree.tree[m] = &HFMNode{weight: v, c: c}
+	for _, c := range tree.rs {
+		tree.tree[m] = &HFMNode{weight: tree.weight[c], c: c}
 		m++
 	}
 	for i := len(tree.weight) + 1; i < len(tree.tree); i++ {
 		min1, min2 := searchMin(tree.tree, i-1)
+		if tree.tree[min1].weight == tree.tree[min2].weight {
+			if min2 < min1 {
+				min2, min1 = min1, min2
+			}
+		}
 		tree.tree[i] = &HFMNode{
 			weight: tree.tree[min1].weight + tree.tree[min2].weight,
 			lChild: min1,
