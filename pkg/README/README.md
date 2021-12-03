@@ -26,8 +26,8 @@ Log: #日志
   Compress: false           # 是否压缩过期日志
 Mysql: #Mysql
   DriverName: mysql #驱动名
-  Username: root  # 填写你的数据库账号
-  Password: WW876001  # 填写你的数据库密码
+  Username: XXX  # 填写你的数据库账号
+  Password: XXX  # 填写你的数据库密码
   Host: 127.0.0.1     # ip
   Port: 3306          # 端口
   DBName: webapp      # 数据库名
