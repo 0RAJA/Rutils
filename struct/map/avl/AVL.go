@@ -1,8 +1,4 @@
-package AVL
-
-import (
-	"fmt"
-)
+package avl
 
 // AvlTree AVL树
 type AvlTree struct {
@@ -17,8 +13,6 @@ type KV struct {
 // AvlTreeNode AVL节点
 type AvlTreeNode struct {
 	kv     *KV
-	Value  int          // 值
-	Times  int          // 值出现的次数
 	Height int          // 该节点作为树根节点，树的高度，方便计算平衡因子
 	Left   *AvlTreeNode // 左子树
 	Right  *AvlTreeNode // 右字树
@@ -111,38 +105,37 @@ func RightLeftRotation(node *AvlTreeNode) *AvlTreeNode {
 	return LeftRotation(node)
 }
 
-func (tree *AvlTree) Add(value int) {
-	tree.Root = tree.Root.add(value)
+func (tree *AvlTree) Add(k, v string) {
+	tree.Root = tree.Root.add(&KV{k: k, v: v})
 }
 
-func (node *AvlTreeNode) add(value int) *AvlTreeNode {
+func (node *AvlTreeNode) add(kv *KV) *AvlTreeNode {
 	if node == nil {
 		return &AvlTreeNode{
-			Value:  value,
-			Times:  1,
+			kv:     kv,
 			Height: 1,
 		}
 	}
-	if node.Value == value {
-		node.Times++
+	if node.kv.k == kv.k {
+		node.kv = kv
 		return node
 	}
 	var newTreeNode *AvlTreeNode
-	if value > node.Value {
-		node.Right = node.Right.add(value)
+	if kv.k > node.kv.k {
+		node.Right = node.Right.add(kv)
 		factor := node.BalanceFactor()
 		if factor <= -2 { //右边变高了
-			if value < node.Right.Value { //在左边
+			if kv.k < node.Right.kv.k { //在左边
 				newTreeNode = RightLeftRotation(node)
 			} else {
 				newTreeNode = LeftRotation(node)
 			}
 		}
 	} else {
-		node.Left = node.Left.add(value)
+		node.Left = node.Left.add(kv)
 		factor := node.BalanceFactor()
 		if factor >= 2 { //右边变高了
-			if value > node.Left.Value { //在右边
+			if kv.k > node.Left.kv.k { //在右边
 				newTreeNode = LeftRightRotation(node)
 			} else {
 				newTreeNode = RightRotation(node)
@@ -199,34 +192,25 @@ func (node *AvlTreeNode) findMaxValue() *AvlTreeNode {
 }
 
 // Find 查找指定节点
-func (tree *AvlTree) Find(value int) *AvlTreeNode {
+func (tree *AvlTree) Find(k string) (string, bool) {
 	if tree.Root == nil {
 		// 如果是空树，返回空
-		return nil
+		return "", false
 	}
 
-	return tree.Root.find(value)
+	return tree.Root.find(k)
 }
 
-func (node *AvlTreeNode) find(value int) *AvlTreeNode {
-	if value == node.Value {
+func (node *AvlTreeNode) find(k string) (string, bool) {
+	if node.kv.k == k {
 		// 如果该节点刚刚等于该值，那么返回该节点
-		return node
-	} else if value < node.Value {
-		// 如果查找的值小于节点值，从节点的左子树开始找
-		if node.Left == nil {
-			// 左子树为空，表示找不到该值了，返回nil
-			return nil
-		}
-		return node.Left.find(value)
-	} else {
-		// 如果查找的值大于节点值，从节点的右子树开始找
-		if node.Right == nil {
-			// 右子树为空，表示找不到该值了，返回nil
-			return nil
-		}
-		return node.Right.find(value)
+		return node.kv.v, true
+	} else if k < node.kv.k && node.Left != nil { //如果查找的值小于节点值，从节点的左子树开始找,左子树为空，表示找不到该值了，返回nil
+		return node.Left.find(k)
+	} else if node.Right != nil { //如果查找的值大于节点值，从节点的右子树开始找,右子树为空，表示找不到该值了，返回nil
+		return node.Right.find(k)
 	}
+	return "", false
 }
 
 // MidOrder 中序遍历
@@ -238,16 +222,8 @@ func (node *AvlTreeNode) midOrder() {
 	if node == nil {
 		return
 	}
-
-	// 先打印左子树
-	node.Left.midOrder()
-
-	// 按照次数打印根节点
-	for i := 0; i < node.Times; i++ {
-		fmt.Println(node.Value)
-	}
-	// 打印右子树
-	node.Right.midOrder()
+	node.Left.midOrder()  // 先打印左子树
+	node.Right.midOrder() // 打印右子树
 }
 
 /*
@@ -266,23 +242,27 @@ func (node *AvlTreeNode) midOrder() {
 	点，然后看其最近的父亲节点是否失衡，失衡时对树进行平衡。
 */
 
-func (node *AvlTreeNode) delete(value int) *AvlTreeNode {
+func (tree *AvlTree) Del(k string) {
+	tree.Root = tree.Root.delete(k)
+}
+
+func (node *AvlTreeNode) delete(k string) *AvlTreeNode {
 	if node == nil {
 		return nil
 	}
-	if value < node.Value {
-		node.Left = node.Left.delete(value)
+	if k < node.kv.k {
+		node.Left = node.Left.delete(k)
 		node.Left.UpdateHeight()
-	} else if value > node.Value {
-		node.Right = node.Right.delete(value)
+	} else if k > node.kv.k {
+		node.Right = node.Right.delete(k)
 		node.Right.UpdateHeight()
 	} else {
 		if node.Left == nil && node.Right == nil {
 			return nil
 		}
 		//该节点有两棵子树，选择更高的哪个来替换
-		// 第二种情况，删除的节点下有两个子树，选择高度更高的子树下的节点来替换被删除的节
-		//点，如果左子树更高，选择左子树中最大的节点，也就是左子树最右边的叶子节点，如果右子树更高，选择
+		//第二种情况，删除的节点下有两个子树，选择高度更高的子树下的节点来替换被删除的节点，
+		//如果左子树更高，选择左子树中最大的节点，也就是左子树最右边的叶子节点，如果右子树更高，选择
 		//右子树中最小的节点，也就是右子树最左边的叶子节点。最后，删除这个叶子节点。
 		if node.Left != nil && node.Right != nil {
 			if node.Left.Height > node.Right.Height {
@@ -291,10 +271,9 @@ func (node *AvlTreeNode) delete(value int) *AvlTreeNode {
 					maxNode = maxNode.Right
 				}
 				//替换节点
-				node.Value = maxNode.Value
-				node.Times = maxNode.Times
+				node.kv = maxNode.kv
 				//删除节点
-				node.Left = node.Left.delete(maxNode.Value)
+				node.Left = node.Left.delete(maxNode.kv.k)
 				//更新高度
 				node.Left.UpdateHeight()
 			} else {
@@ -302,21 +281,18 @@ func (node *AvlTreeNode) delete(value int) *AvlTreeNode {
 				for minNode.Left != nil {
 					minNode = minNode.Left
 				}
-				node.Value = minNode.Value
-				node.Times = minNode.Times
-				node.Right = node.Right.delete(minNode.Value)
+				node.kv = minNode.kv
+				node.Right = node.Right.delete(minNode.kv.k)
 				node.Right.UpdateHeight()
 			}
 		} else { // 只有左子树或只有右子树
 			if node.Left != nil {
 				//只有左子树,则该子树只有一个节点
-				node.Value = node.Left.Value
-				node.Times = node.Left.Times
+				node.kv = node.Left.kv
 				node.Height = 1
 				node.Left = nil
 			} else if node.Right != nil {
-				node.Value = node.Right.Value
-				node.Times = node.Right.Times
+				node.kv = node.Right.kv
 				node.Height = 1
 				node.Right = nil
 			}

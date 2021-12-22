@@ -12,4 +12,5 @@ func TestNewAVL(t *testing.T) {
 	avlTree.Add(6)
 	avlTree.Add(2)
 	avlTree.MidOrder()
+	avlTree.Find(2)
 }
