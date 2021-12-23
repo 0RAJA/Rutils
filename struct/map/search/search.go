@@ -3,6 +3,7 @@ package search
 type KV struct {
 	k, v string
 }
+
 type BSTree struct {
 	root *BSNode
 }
