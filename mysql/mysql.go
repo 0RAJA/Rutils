@@ -24,24 +24,18 @@ type InitStruct struct {
 	MaxOpenConns int
 }
 
-var db *sqlx.DB
-
-func Init(initSetting *InitStruct) error {
+func Init(initSetting *InitStruct) (*sqlx.DB, error) {
 	var err error
-	db, err = sqlx.Connect(initSetting.DriverName, fmt.Sprintf(IpFormat, initSetting.Username, initSetting.Password, initSetting.Host, initSetting.Port, initSetting.DBName, initSetting.ParseTime, initSetting.Charset))
+	db, err := sqlx.Connect(initSetting.DriverName, fmt.Sprintf(IpFormat, initSetting.Username, initSetting.Password, initSetting.Host, initSetting.Port, initSetting.DBName, initSetting.ParseTime, initSetting.Charset))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	db.SetMaxOpenConns(initSetting.MaxOpenConns) //SetMaxOpenConns设置与数据库建立连接的最大数目。
 	db.SetMaxIdleConns(initSetting.MaxIdleConns) //SetMaxIdleConns设置连接池中的最大闲置连接数。
 	err = db.Ping()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
-}
-
-func Close() {
-	_ = db.Close()
+	return db, nil
 }
