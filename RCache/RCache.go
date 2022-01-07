@@ -81,6 +81,10 @@ func (g *Group) Get(key string) (ByteView, error) {
 	return g.load(key)
 }
 
+func (g *Group) Set(key string, value ByteView) {
+	g.mainCache.add(key, value)
+}
+
 /*
 修改 load 方法，使用 PickPeer() 方法选择节点，
 	若非本机节点，则调用 getFromPeer() 从远程获取。

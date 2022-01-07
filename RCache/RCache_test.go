@@ -29,6 +29,7 @@ func TestGroup_Get(t *testing.T) {
 		}
 		return nil, fmt.Errorf("%s is not exist", key)
 	}))
+	rCache.Set("Tom", ByteView{[]byte("630")})
 	for k, v := range db {
 		if view, err := rCache.Get(k); err != nil || view.String() != v {
 			t.Fatal("failed to get value of Tom")

@@ -15,8 +15,8 @@ const (
 // Value 所存储值的类型
 type Value interface {
 	// Size 用于计算此值的类型所占用的内存
-	Size() int
 	//防止有些像[]int{1,2,3}这种类型,需要手动计算大小
+	Size() int
 }
 
 // Cache 缓存
