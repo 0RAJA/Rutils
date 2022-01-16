@@ -88,35 +88,32 @@ func ShellSort(list []int, cmp func(i, j int) bool) {
 }
 
 // MergeSort 归并排序
-func MergeSort(array []int, begin int, end int) {
+func MergeSort(nums []int, l, r int) {
 	//至少有两个元素,进入排序
-	if end-begin > 1 {
-		mid := begin + (end-begin)/2
-		MergeSort(array, begin, mid)
-		MergeSort(array, mid, len(array))
-		merge(array, begin, mid, end)
+	if r-l > 1 {
+		mid := l + (r-l)/2
+		MergeSort(nums, l, mid)
+		MergeSort(nums, mid, r)
+		merge(nums, l, mid, r)
 	}
 }
 
-func merge(array []int, begin int, mid int, end int) {
-	leftSize := mid - begin
-	rightSize := end - mid
-	tmpSlice := make([]int, 0, leftSize+rightSize)
-	l, r := 0, 0
-	for l < leftSize && r < rightSize {
-		lValue, rValue := array[l+begin], array[r+mid]
-		if lValue > rValue {
-			tmpSlice = append(tmpSlice, rValue)
+func merge(nums []int, begin, mid, end int) {
+	tmp := make([]int, 0, end-begin+1)
+	l, r := begin, mid
+	for l < mid && r < end {
+		if nums[r] < nums[l] {
+			tmp = append(tmp, nums[r])
 			r++
 		} else {
-			tmpSlice = append(tmpSlice, lValue)
+			tmp = append(tmp, nums[l])
 			l++
 		}
 	}
-	tmpSlice = append(tmpSlice, array[l+begin:mid]...)
-	tmpSlice = append(tmpSlice, array[r+mid:end]...)
-	for i := begin; i < end; i++ {
-		array[i] = tmpSlice[i-begin]
+	tmp = append(tmp, nums[l:mid]...)
+	tmp = append(tmp, nums[r:end]...)
+	for i := range tmp {
+		nums[begin+i] = tmp[i]
 	}
 }
 
