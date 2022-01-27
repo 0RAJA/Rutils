@@ -1,7 +1,7 @@
 package app
 
 import (
-	"Rutils/pkg/app/convert"
+	"github.com/0RAJA/Rutils/pkg/app/convert"
 	"github.com/gin-gonic/gin"
 )
 

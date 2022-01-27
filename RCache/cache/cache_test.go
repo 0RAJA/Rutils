@@ -1,8 +1,8 @@
 package cache
 
 import (
-	"Rutils/RMemory"
 	"fmt"
+	"github.com/0RAJA/Rutils/RMemory"
 	"testing"
 )
 

@@ -1,8 +1,8 @@
 package BSTree_test
 
 import (
-	"Rutils/struct/BSTree"
 	"fmt"
+	"github.com/0RAJA/Rutils/struct/BSTree"
 	"testing"
 )
 

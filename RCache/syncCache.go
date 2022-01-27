@@ -1,7 +1,7 @@
 package RCache
 
 import (
-	"Rutils/RCache/cache"
+	"github.com/0RAJA/Rutils/RCache/cache"
 	"sync"
 )
 

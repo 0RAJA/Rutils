@@ -1,8 +1,8 @@
 package email
 
 import (
-	"Rutils/pkg/times"
 	"fmt"
+	"github.com/0RAJA/Rutils/pkg/times"
 	"testing"
 	"time"
 )

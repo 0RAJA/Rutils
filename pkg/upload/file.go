@@ -1,8 +1,8 @@
 package upload
 
 import (
-	"Rutils/pkg/util"
 	"errors"
+	"github.com/0RAJA/Rutils/pkg/util"
 	"io"
 	"io/ioutil"
 	"mime/multipart"

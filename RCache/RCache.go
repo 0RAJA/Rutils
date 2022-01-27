@@ -1,9 +1,9 @@
 package RCache
 
 import (
-	"Rutils/RCache/RErr"
-	"Rutils/RSync/singleflight"
 	"fmt"
+	"github.com/0RAJA/Rutils/RCache/RErr"
+	"github.com/0RAJA/Rutils/RSync/singleflight"
 	"log"
 	"net/http"
 	"sync"

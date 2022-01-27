@@ -1,8 +1,8 @@
 package skip_list_test
 
 import (
-	"Rutils/struct/skip_list"
 	"fmt"
+	"github.com/0RAJA/Rutils/struct/skip_list"
 	"testing"
 )
 

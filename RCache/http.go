@@ -1,9 +1,9 @@
 package RCache
 
 import (
-	"Rutils/RCache/RErr"
-	"Rutils/RCache/consistenthash"
 	"fmt"
+	"github.com/0RAJA/Rutils/RCache/RErr"
+	"github.com/0RAJA/Rutils/RCache/consistenthash"
 	"io/ioutil"
 	"log"
 	"net/http"

@@ -1,7 +1,7 @@
 package jwt
 
 import (
-	"Rutils/pkg/app/errcode"
+	"github.com/0RAJA/Rutils/pkg/app/errcode"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 )

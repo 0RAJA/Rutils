@@ -1,7 +1,7 @@
 package app
 
 import (
-	"Rutils/pkg/app/errcode"
+	"github.com/0RAJA/Rutils/pkg/app/errcode"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

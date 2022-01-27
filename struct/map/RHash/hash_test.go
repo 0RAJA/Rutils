@@ -1,8 +1,8 @@
 package RHash_test
 
 import (
-	"Rutils/struct/map/RHash"
 	"fmt"
+	"github.com/0RAJA/Rutils/struct/map/RHash"
 	"testing"
 )
 

@@ -1,8 +1,8 @@
 package search_test
 
 import (
-	"Rutils/struct/map/search"
 	"fmt"
+	"github.com/0RAJA/Rutils/struct/map/search"
 	"strconv"
 	"testing"
 )

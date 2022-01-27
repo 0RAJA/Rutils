@@ -1,8 +1,8 @@
 package avl_test
 
 import (
-	"Rutils/struct/map/avl"
 	"fmt"
+	"github.com/0RAJA/Rutils/struct/map/avl"
 	"strconv"
 	"testing"
 )
