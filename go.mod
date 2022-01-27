@@ -1,4 +1,4 @@
-module Rutils
+module github.com/0RAJA/Rutils
 
 go 1.16
 
