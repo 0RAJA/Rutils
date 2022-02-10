@@ -14,16 +14,18 @@ func NewSet(n int) *Set {
 	return &Set{parent: parent, size: size}
 }
 
-func (s *Set) find(x int) int {
+// Find 查找x所在的集合
+func (s *Set) Find(x int) int {
 	if s.parent[x] != x {
-		s.parent[x] = s.find(s.parent[x])
+		s.parent[x] = s.Find(s.parent[x])
 	}
 	return s.parent[x]
 }
 
-func (s *Set) union(x, y int) {
-	xf := s.find(x)
-	yf := s.find(y)
+// Union 联合
+func (s *Set) Union(x, y int) {
+	xf := s.Find(x)
+	yf := s.Find(y)
 	if xf == yf {
 		return
 	}
@@ -34,6 +36,7 @@ func (s *Set) union(x, y int) {
 	s.parent[yf] = xf
 }
 
+// InSameSet 判断xy是否在同一个集合
 func (s *Set) InSameSet(x, y int) bool {
-	return s.find(x) == s.find(y)
+	return s.Find(x) == s.Find(y)
 }
