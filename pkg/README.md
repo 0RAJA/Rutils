@@ -36,8 +36,8 @@ Mysql: #Mysql
   MaxIdleConns: 200
   MaxOpenConns: 50
 Redis:
-  Host: 47.108.250.98
-  Port: 7963
+  Host: 
+  Port: 
   DB: 0
   Password: WW876001
   PoolSize: 100 #连接池
@@ -54,14 +54,7 @@ Email:
   From: XXX@qq.com
   To:
     - XXX@qq.com
-Upload:
-  UploadSavePath: storage/uploads # 上传文件的最终保存目录
-  UploadServerUrl: http://127.0.0.1:8080/static # 上传文件后的用于展示的文件服务地址
-  UploadImageMaxSize: 10  # MB 上传文件所允许的最大空间大小
-  UploadImageAllowExts: # 上传文件所允许的文件后缀
-    - .jpg
-    - .jpeg
-    - .png
+
 ```
 
 # 设置全局配置变量
@@ -201,7 +194,7 @@ func init(){
         return
     }
     //初始化JWT
-    jwt.Init(global.JWTSetting.Issuer, global.JWTSetting.Expire, global.JWTSetting.Secret)
+    //jwt.Init(global.JWTSetting.Issuer, global.JWTSetting.Expire, global.JWTSetting.Secret)
     //初始化上传文件服务
     upload.Init(
         &upload.ServerStruct{
