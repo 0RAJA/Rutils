@@ -71,7 +71,7 @@ func (hp *HttpPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if !strings.HasPrefix(r.URL.Path, hp.basePath) {
 		http.Error(w, RErr.BadRequest, http.StatusNotFound)
 		return
-		//panic(RErr.UrlPathErr + r.URL.Path)
+		//panic(RErr.UrlPathErr + r.URL.LocalPath)
 	}
 	hp.Log("%s %s", r.Method, r.URL.Path)
 	// /<basepath>/<groupname>/<key> required 解析url

@@ -1,44 +1,51 @@
 package upload
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"errors"
-	"github.com/0RAJA/Rutils/pkg/util"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"os"
 	"path"
+	"strconv"
 	"strings"
+	"time"
 )
 
-type FileType int
+type FileType string
 
-var ImageInit *ImageStruct
-
-var ServerInit *ServerStruct
-
-type ImageStruct struct {
-	ImageAllowExits  []string
-	SaveImageMaxSize int
+type FileTypeor interface {
+	GetType() FileType
+	GetSuffix() []string
+	GetMaxSize() int
+	GetUrlPrefix() string
+	GetPath() string
 }
 
-type ServerStruct struct {
-	SavePath  string
-	ServerUrl string
-}
+var UploadManager = make(uploadManager)
 
-const TypeImage FileType = iota + 1
+type uploadManager map[FileType]FileTypeor
+
+func (u uploadManager) addFileType(fileType FileTypeor) {
+	if _, ok := u[fileType.GetType()]; ok {
+		panic(RepeatedFileTypeErr)
+	}
+	u[fileType.GetType()] = fileType
+}
 
 var (
-	ExtErr        = errors.New("file suffix is not supported")
-	FileSizeErr   = errors.New("exceeded maximum file limit")
-	CreatePathErr = errors.New("failed to create save directory")
-	CompetenceErr = errors.New("insufficient file permissions")
+	ExtErr              = errors.New("file suffix is not supported")
+	FileSizeErr         = errors.New("exceeded maximum file limit")
+	CreatePathErr       = errors.New("failed to create save directory")
+	CompetenceErr       = errors.New("insufficient file permissions")
+	RepeatedFileTypeErr = errors.New("DuplicateFileType")
 )
 
-func Init(serverStruct *ServerStruct, imageStruct *ImageStruct) {
-	ServerInit = serverStruct
-	ImageInit = imageStruct
+func Init(typeors ...FileTypeor) {
+	for _, typeor := range typeors {
+		UploadManager.addFileType(typeor)
+	}
 }
 
 // GetFileExt 获取后缀
@@ -46,17 +53,13 @@ func GetFileExt(name string) string {
 	return path.Ext(name)
 }
 
-// GetSavePath 获取默认保存路径
-func GetSavePath() string {
-	return ServerInit.SavePath
-}
-
 // GetFileName 加密文件名
-func GetFileName(name string) string {
-	ext := GetFileExt(name)
-	fileName := strings.TrimSuffix(name, ext) //去除文件后缀
-	fileName = util.EncodeMD5(fileName)
-	return fileName + ext
+func GetFileName(fileName string) (string, string) {
+	ext := GetFileExt(fileName)
+	m := md5.New()
+	t := strconv.Itoa(int(time.Now().Unix()))
+	m.Write([]byte(fileName + t))
+	return hex.EncodeToString(m.Sum(nil)), ext
 }
 
 //检查文件
@@ -68,31 +71,23 @@ func CheckSavePath(dst string) bool {
 }
 
 // checkContainExt 检查文件后缀是否包含在约定的后缀配置项中
-func checkContainExt(t FileType, name string) bool {
-	ext := GetFileExt(name)
+func checkContainExt(t FileType, ext string) (fileTypeor FileTypeor, err error) {
 	ext = strings.ToUpper(ext)
-	switch t {
-	case TypeImage:
-		for _, allowExt := range ImageInit.ImageAllowExits {
-			if strings.ToUpper(allowExt) == ext {
-				return true
-			}
+	fileTypeor, ok := UploadManager[t]
+	if !ok {
+		return nil, ExtErr
+	}
+	for _, suffix := range fileTypeor.GetSuffix() {
+		if suffix == ext {
+			return fileTypeor, nil
 		}
 	}
-	return false
+	return nil, ExtErr
 }
 
 // checkMaxSize 检查文件大小是否超出最大大小限制
-func checkMaxSize(t FileType, f multipart.File) bool {
-	content, _ := ioutil.ReadAll(f)
-	size := len(content)
-	switch t {
-	case TypeImage:
-		if size < ImageInit.SaveImageMaxSize*1024*1024 {
-			return true
-		}
-	}
-	return false
+func checkMaxSize(t FileTypeor, f *multipart.FileHeader) bool {
+	return t.GetMaxSize() >= int(f.Size)
 }
 
 // checkPermission 检查文件权限是否足够
