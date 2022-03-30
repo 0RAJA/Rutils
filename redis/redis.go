@@ -1,27 +1,25 @@
 package redis
 
 import (
-	"github.com/go-redis/redis"
+	"context"
+	"errors"
+	"github.com/go-redis/redis/v8"
 )
 
-type InitStruct struct {
-	Host     string
-	Port     string
-	DB       int
-	Password string
-	PoolSize int
+func redisInit(Addr, Password string, PoolSize, DB int) *redis.Client {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     Addr,     //ip:端口
+		Password: Password, //密码
+		PoolSize: PoolSize, //连接池
+		DB:       DB,       //默认连接数据库
+	})
+	_, err := rdb.Ping(context.Background()).Result() //测试连接
+	if err != nil {
+		panic(err)
+	}
+	return rdb
 }
 
-func Init(inits *InitStruct) (*redis.Client, error) {
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     inits.Host + ":" + inits.Port, //ip:端口
-		Password: inits.Password,                //密码
-		PoolSize: inits.PoolSize,                //socket最大连接数
-		DB:       inits.DB,                      //默认连接数据库
-	})
-	_, err := rdb.Ping().Result() //测试连接
-	if err != nil {
-		return nil, err
-	}
-	return rdb, nil
+func IsNil(err error) bool {
+	return errors.Is(err, redis.Nil)
 }
