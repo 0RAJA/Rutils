@@ -1,8 +1,8 @@
 package skip_list_test
 
 import (
-	"fmt"
 	"github.com/0RAJA/Rutils/struct/skip_list"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -13,10 +13,22 @@ func (m M) CompareTo(comparable skip_list.Comparable) int {
 	return int(m - c)
 }
 
-func TestNewSkipList(t *testing.T) {
+func TestNewSkipListFetMaxMin(t *testing.T) {
 	sList := skip_list.NewSkipList()
-	sList.Put(M(1), 111)
-	fmt.Println(sList.Get(M(1)))
-	sList.Delete(M(1))
-	fmt.Println(sList.Get(M(1)))
+	for i := 1; i <= 10; i++ {
+		sList.Put(skip_list.NewKV(M(i), i))
+	}
+	min := sList.GetMin()
+	require.NotEmpty(t, min)
+	require.Equal(t, *min, skip_list.KV{K: M(1), V: 1})
+	max := sList.GetMax()
+	require.NotEmpty(t, max)
+	require.Equal(t, *max, skip_list.KV{K: M(10), V: 10})
+	result, ok := sList.Get(M(0))
+	require.False(t, ok)
+	require.NotEmpty(t, result)
+	require.Equal(t, *result, skip_list.KV{K: M(1), V: 1})
+	result, ok = sList.Get(M(11))
+	require.False(t, ok)
+	require.Empty(t, result)
 }
