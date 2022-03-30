@@ -10,24 +10,24 @@ import (
 /*
 Host: smtp.qq.com
   Port: 465
-  UserName: 1647193241@qq.com
-  Password: hrefwwxzvxgbehfc
+  UserName: XXX@qq.com
+  Password:
   IsSSL: true
-  From: 1647193241@qq.com
+  From: XXX@qq.com
   To:
-    - 1647193241@qq.com
+    - XXX@qq.com
 */
 func TestEmail_SendMail(t *testing.T) {
 	defailtMailer := NewEmail(&SMTPInfo{
 		Host:     "smtp.qq.com",
 		Port:     465,
 		IsSSL:    true,
-		UserName: "1647193241@qq.com",
-		Password: "hrefwwxzvxgbehfc",
-		From:     "1647193241@qq.com",
+		UserName: "XXX@qq.com",
+		Password: "",
+		From:     "XXX@qq.com",
 	})
 	err := defailtMailer.SendMail( //短信通知
-		[]string{"1647193241@qq.com"},
+		[]string{"XXX@qq.com"},
 		fmt.Sprintf("异常抛出，发生时间: %s,%d", times.GetNowDateTimeStr(), time.Now().Unix()),
 		fmt.Sprintf("错误信息: %v", "NO"),
 	)

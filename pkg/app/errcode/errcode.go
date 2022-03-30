@@ -8,9 +8,9 @@ import (
 //编写常用的一些错误处理公共方法，标准化我们的错误输出
 
 type Error struct {
-	code    int      `json:"code,omitempty"`
-	msg     string   `json:"msg,omitempty"`
-	details []string `json:"details,omitempty"`
+	Code    int      `json:"code,omitempty"`
+	Msg     string   `json:"msg,omitempty"`
+	Details []string `json:"details,omitempty"`
 }
 
 var codes = map[int]string{}
@@ -21,36 +21,36 @@ func NewError(code int, msg string) *Error {
 	}
 	codes[code] = msg
 	return &Error{
-		code:    code,
-		msg:     msg,
-		details: []string{},
+		Code:    code,
+		Msg:     msg,
+		Details: []string{},
 	}
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("错误码：%d, 错误信息: %s", e.Code(), e.Msg())
+	return fmt.Sprintf("错误码：%d, 错误信息: %s", e.SCode(), e.SMsg())
 }
 
-func (e *Error) Code() int {
-	return e.code
+func (e *Error) SCode() int {
+	return e.Code
 }
 
-func (e *Error) Msg() string {
-	return e.msg
+func (e *Error) SMsg() string {
+	return e.Msg
 }
 
 func (e *Error) MsgF(args []interface{}) string {
-	return fmt.Sprintf(e.msg, args)
+	return fmt.Sprintf(e.Msg, args)
 }
 
-func (e *Error) Details() []string {
-	return e.details
+func (e *Error) SDetails() []string {
+	return e.Details
 }
 
 func (e *Error) WithDetails(details ...string) *Error {
 	newErr := *e
 	for _, d := range details {
-		newErr.details = append(newErr.details, d)
+		newErr.Details = append(newErr.Details, d)
 	}
 	return &newErr
 }
@@ -60,22 +60,28 @@ func (e *Error) WithDetails(details ...string) *Error {
 // 因为不同的内部错误码在 HTTP 状态码中都代表着不同的意义，
 // 我们需要将其区分开来，便于客户端以及监控/报警等系统的识别和监听
 func (e *Error) StatusCode() int {
-	switch e.Code() {
-	case Success.Code():
+	switch e.SCode() {
+	case Success.SCode():
 		return http.StatusOK
-	case ServerError.Code():
+	case ServerErr.SCode():
 		return http.StatusInternalServerError
-	case InvalidParams.Code():
+	case InvalidParamsErr.SCode():
 		return http.StatusBadRequest
-	case UnauthorizedAuthNotExist.Code():
+	case InsufficientPermissionsErr.SCode():
 		fallthrough
-	case UnauthorizedTokenError.Code():
+	case UnauthorizedAuthNotExistErr.SCode():
 		fallthrough
-	case UnauthorizedTokenGenerate.Code():
+	case UnauthorizedTokenErr.SCode():
 		fallthrough
-	case UnauthorizedTokenTimeout.Code():
+	case UnauthorizedTokenGenerateErr.SCode():
+		fallthrough
+	case UnauthorizedNotLoginErr.SCode():
+		fallthrough
+	case UnauthorizedTokenTimeoutErr.SCode():
 		return http.StatusUnauthorized
-	case TooManyRequests.Code():
+	case TimeOutErr.SCode():
+		fallthrough
+	case TooManyRequestsErr.SCode():
 		return http.StatusTooManyRequests
 	}
 	return http.StatusInternalServerError
@@ -86,6 +92,6 @@ func SwitchErrorCode(err interface{}) *Error {
 	case *Error:
 		return err.(*Error)
 	default:
-		return ServerError
+		return ServerErr
 	}
 }
