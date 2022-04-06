@@ -7,7 +7,7 @@ import (
 )
 
 type Payload struct {
-	//用于管理每个JWT
+	//用于管理每个token
 	ID       uuid.UUID
 	UserName string `json:"user_name,omitempty"`
 	//创建时间用于检验

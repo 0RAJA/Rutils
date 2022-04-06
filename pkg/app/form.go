@@ -37,5 +37,5 @@ func (r *Response) ToResponseList(list interface{}, totalRows int) {
 }
 
 func (r *Response) ToErrorResponse(err *errcode.Error) {
-	r.Ctx.JSON(err.StatusCode(), err)
+	r.Ctx.JSON(err.HCode(), err)
 }
