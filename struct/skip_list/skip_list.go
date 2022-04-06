@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	MaxLevel    = 18
-	Probability = 1 / math.E
+	MaxLevel    = 18         //最大层数
+	Probability = 1 / math.E //每一个节点是否可以向上的概率基数
 )
 
 type (
@@ -16,6 +16,7 @@ type (
 	Comparable interface {
 		CompareTo(Comparable) int
 	}
+
 	KV struct {
 		K Comparable
 		V interface{}
@@ -42,6 +43,7 @@ func NewKV(key Comparable, value interface{}) *KV {
 		V: value,
 	}
 }
+
 func NewSkipList() *SkipList {
 	return &SkipList{
 		node:          Element{next: make([]*Element, MaxLevel)},
