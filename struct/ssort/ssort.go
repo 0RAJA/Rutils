@@ -1,6 +1,6 @@
 package ssort
 
-// BubbleSort 冒泡排序
+// BubbleSort 冒泡排序 n^2
 func BubbleSort(list []int, cmp func(i, j int) bool) {
 	flag := true
 	for i := 0; i < len(list); i++ {
@@ -17,7 +17,7 @@ func BubbleSort(list []int, cmp func(i, j int) bool) {
 	}
 }
 
-// SelectSort 选择排序
+// SelectSort 选择排序 n^2
 func SelectSort(list []int, cmp func(i, j int) bool) {
 	n := len(list)
 	for i := 0; i < n/2; i++ {
@@ -48,7 +48,7 @@ func SelectSort(list []int, cmp func(i, j int) bool) {
 	}
 }
 
-// InsertSort 插入排序
+// InsertSort 插入排序 n^2
 func InsertSort(list []int, cmp func(i, j int) bool) {
 	n := len(list)
 	// 进行 N-1 轮迭代
@@ -87,7 +87,7 @@ func ShellSort(list []int, cmp func(i, j int) bool) {
 	}
 }
 
-// MergeSort 归并排序
+// MergeSort 归并排序 nlogn
 func MergeSort(nums []int, l, r int) {
 	//至少有两个元素,进入排序
 	if r-l > 1 {
@@ -138,7 +138,7 @@ func MergeSort2(array []int, begin int, end int) {
 	}
 }
 
-// QSort 快排
+// QSort 快排 nlogn
 func QSort(array []int, low, high int, cmp func(a, b int) bool) {
 	i, j := low, high
 	if low >= high {
