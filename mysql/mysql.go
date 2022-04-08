@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func mysqlInit(driverName, dataSourceName string, maxOpenConns, maxIdleCOnns int) *sql.DB {
+func MysqlInit(driverName, dataSourceName string, maxOpenConns, maxIdleCOnns int) *sql.DB {
 	db, err := sql.Open(driverName, dataSourceName)
 	if err != nil {
 		panic(err)

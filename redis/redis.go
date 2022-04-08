@@ -6,7 +6,7 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-func redisInit(Addr, Password string, PoolSize, DB int) *redis.Client {
+func RedisInit(Addr, Password string, PoolSize, DB int) *redis.Client {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     Addr,     //ip:端口
 		Password: Password, //密码
