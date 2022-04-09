@@ -6,6 +6,11 @@ import (
 
 //编写常用的一些错误处理公共方法，标准化我们的错误输出
 
+type Err interface {
+	error
+	HCode() int
+}
+
 type Error struct {
 	Code     int      `json:"code,omitempty"`
 	Msg      string   `json:"msg,omitempty"`
@@ -29,7 +34,7 @@ func NewError(code int, msg string, httpCode int) *Error {
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("错误码：%d, 错误信息: %s", e.SCode(), e.SMsg())
+	return fmt.Sprintf("错误码：%d, 错误信息: %s, 详细信息:%s", e.SCode(), e.SMsg(), e.SDetails())
 }
 
 func (e *Error) SCode() int {
@@ -42,10 +47,6 @@ func (e *Error) SMsg() string {
 
 func (e *Error) HCode() int {
 	return e.httpCode
-}
-
-func (e *Error) MsgF(args []interface{}) string {
-	return fmt.Sprintf(e.Msg, args)
 }
 
 func (e *Error) SDetails() []string {
