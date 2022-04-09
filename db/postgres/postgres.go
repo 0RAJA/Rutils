@@ -1,13 +1,12 @@
-package mysql
+package postgres
 
 import (
 	"database/sql"
-	"errors"
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 	"time"
 )
 
-func MysqlInit(driverName, dataSourceName string, maxOpenConns, maxIdleCOnns int) *sql.DB {
+func PostgresInit(driverName, dataSourceName string, maxOpenConns, maxIdleCOnns int) *sql.DB {
 	db, err := sql.Open(driverName, dataSourceName)
 	if err != nil {
 		panic(err)
@@ -19,8 +18,4 @@ func MysqlInit(driverName, dataSourceName string, maxOpenConns, maxIdleCOnns int
 	db.SetMaxIdleConns(maxIdleCOnns)
 	db.SetConnMaxLifetime(time.Minute * 10)
 	return db
-}
-
-func IsNil(err error) bool {
-	return errors.Is(err, sql.ErrNoRows)
 }
