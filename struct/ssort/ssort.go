@@ -5,7 +5,7 @@ func BubbleSort(list []int, cmp func(i, j int) bool) {
 	flag := true
 	for i := 0; i < len(list); i++ {
 		flag = true
-		for j := len(list) - 2; j >= i; j-- { //从后往前冒泡
+		for j := len(list) - 2; j >= i; j-- { // 从后往前冒泡
 			if !cmp(j, j+1) {
 				flag = false
 				list[j], list[j+1] = list[j+1], list[j]
@@ -89,7 +89,7 @@ func ShellSort(list []int, cmp func(i, j int) bool) {
 
 // MergeSort 归并排序 nlogn
 func MergeSort(nums []int, l, r int) {
-	//至少有两个元素,进入排序
+	// 至少有两个元素,进入排序
 	if r-l > 1 {
 		mid := l + (r-l)/2
 		MergeSort(nums, l, mid)
@@ -119,14 +119,14 @@ func merge(nums []int, begin, mid, end int) {
 
 // MergeSort2 非递归
 func MergeSort2(array []int, begin int, end int) {
-	//步长从1开始
+	// 步长从1开始
 	step := 1
 	for end-begin > step {
-		for i := begin; i < end; i += step << 1 { //每次找到两个合并部分
+		for i := begin; i < end; i += step << 1 { // 每次找到两个合并部分
 			lo := i
 			mid := lo + step
 			ro := mid + step
-			if mid > end { //不到一个的范围就break
+			if mid > end { // 不到一个的范围就break
 				break
 			}
 			if ro > end {
@@ -160,4 +160,55 @@ func QSort(array []int, low, high int, cmp func(a, b int) bool) {
 	array[low] = k
 	QSort(array, i, low-1, cmp)
 	QSort(array, low+1, j, cmp)
+}
+
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+// SortList 给出链表的头节点和最后一个有效节点的下一个节点
+func SortList(head, tail *ListNode) *ListNode {
+	// 0
+	if head == nil {
+		return head
+	}
+	// 1
+	if head.Next == tail {
+		head.Next = nil
+		return head
+	}
+	// >=2 快慢指针找中点
+	slow, fast := head, head
+	for fast != tail {
+		slow = slow.Next
+		fast = fast.Next
+		if fast != tail {
+			fast = fast.Next
+		}
+	}
+	mid := slow
+	// merge
+	return mergeList(SortList(head, mid), SortList(mid, tail))
+}
+
+func mergeList(head1, head2 *ListNode) *ListNode {
+	dummyHead := &ListNode{}
+	t, t1, t2 := dummyHead, head1, head2
+	for t1 != nil && t2 != nil {
+		if t1.Val <= t2.Val {
+			t.Next = t1
+			t1 = t1.Next
+		} else {
+			t.Next = t2
+			t2 = t2.Next
+		}
+		t = t.Next
+	}
+	if t1 != nil {
+		t.Next = t1
+	} else {
+		t.Next = t2
+	}
+	return dummyHead.Next
 }
