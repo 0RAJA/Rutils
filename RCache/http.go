@@ -2,14 +2,15 @@ package RCache
 
 import (
 	"fmt"
-	"github.com/0RAJA/Rutils/RCache/RErr"
-	"github.com/0RAJA/Rutils/RCache/consistenthash"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
+
+	"github.com/0RAJA/Rutils/RCache/RErr"
+	"github.com/0RAJA/Rutils/RCache/consistenthash"
 )
 
 //提供被其他节点访问的能力(基于http)

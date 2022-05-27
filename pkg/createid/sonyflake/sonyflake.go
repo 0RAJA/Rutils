@@ -2,8 +2,9 @@ package sonyflake
 
 import (
 	"fmt"
-	"github.com/sony/sonyflake"
 	"time"
+
+	"github.com/sony/sonyflake"
 )
 
 const (

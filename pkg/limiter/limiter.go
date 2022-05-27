@@ -1,9 +1,10 @@
 package limiter
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/juju/ratelimit"
-	"time"
 )
 
 type Iface interface {

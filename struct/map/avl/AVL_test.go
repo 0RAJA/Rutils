@@ -2,9 +2,10 @@ package avl_test
 
 import (
 	"fmt"
-	"github.com/0RAJA/Rutils/struct/map/avl"
 	"strconv"
 	"testing"
+
+	"github.com/0RAJA/Rutils/struct/map/avl"
 )
 
 func TestAvlTree_Add(t *testing.T) {

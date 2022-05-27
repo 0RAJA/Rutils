@@ -2,6 +2,7 @@ package email
 
 import (
 	"crypto/tls"
+
 	"gopkg.in/gomail.v2"
 )
 

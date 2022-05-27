@@ -1,10 +1,11 @@
 package upload_test
 
 import (
-	"github.com/0RAJA/Rutils/pkg/upload"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"testing"
+
+	"github.com/0RAJA/Rutils/pkg/upload"
+	"github.com/gin-gonic/gin"
 )
 
 func TestSaveFile(t *testing.T) {

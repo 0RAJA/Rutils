@@ -2,9 +2,10 @@ package password
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/0RAJA/Rutils/pkg/utils"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestHashPassword(t *testing.T) {

@@ -1,9 +1,10 @@
 package skip_list_test
 
 import (
+	"testing"
+
 	"github.com/0RAJA/Rutils/struct/skip_list"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 type M int

@@ -1,10 +1,11 @@
 package token
 
 import (
+	"time"
+
 	"github.com/0RAJA/Rutils/pkg/app/errcode"
 	"github.com/o1egl/paseto"
 	"golang.org/x/crypto/chacha20poly1305"
-	"time"
 )
 
 type PasetoMaker struct {

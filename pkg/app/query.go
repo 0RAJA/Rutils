@@ -1,9 +1,10 @@
 package app
 
 import (
+	"time"
+
 	"github.com/0RAJA/Rutils/pkg/times"
 	"github.com/gin-gonic/gin"
-	"time"
 )
 
 func GetPath(ctx *gin.Context, key string) string {

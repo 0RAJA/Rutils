@@ -1,9 +1,10 @@
 package token
 
 import (
+	"time"
+
 	"github.com/0RAJA/Rutils/pkg/app/errcode"
 	"github.com/google/uuid"
-	"time"
 )
 
 type Payload struct {

@@ -2,8 +2,9 @@ package RHash_test
 
 import (
 	"fmt"
-	"github.com/0RAJA/Rutils/struct/map/RHash"
 	"testing"
+
+	"github.com/0RAJA/Rutils/struct/map/RHash"
 )
 
 func TestNewM(t *testing.T) {

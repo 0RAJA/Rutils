@@ -2,11 +2,12 @@ package RCache
 
 import (
 	"fmt"
-	"github.com/0RAJA/Rutils/RCache/RErr"
-	"github.com/0RAJA/Rutils/RSync/singleflight"
 	"log"
 	"net/http"
 	"sync"
+
+	"github.com/0RAJA/Rutils/RCache/RErr"
+	"github.com/0RAJA/Rutils/RSync/singleflight"
 )
 
 //Cache的表层

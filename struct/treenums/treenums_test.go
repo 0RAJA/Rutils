@@ -1,9 +1,10 @@
 package treenums_test
 
 import (
+	"testing"
+
 	"github.com/0RAJA/Rutils/struct/treenums"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestTreenums(t *testing.T) {

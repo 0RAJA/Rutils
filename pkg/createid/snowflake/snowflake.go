@@ -1,8 +1,9 @@
 package snowflake
 
 import (
-	"github.com/bwmarrin/snowflake"
 	"time"
+
+	"github.com/bwmarrin/snowflake"
 )
 
 //雪花算法

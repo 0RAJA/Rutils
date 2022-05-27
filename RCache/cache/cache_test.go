@@ -2,8 +2,9 @@ package cache
 
 import (
 	"fmt"
-	"github.com/0RAJA/Rutils/RMemory"
 	"testing"
+
+	"github.com/0RAJA/Rutils/RMemory"
 )
 
 type Mints []int

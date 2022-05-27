@@ -1,11 +1,12 @@
 package token
 
 import (
+	"testing"
+	"time"
+
 	"github.com/0RAJA/Rutils/pkg/app/errcode"
 	"github.com/0RAJA/Rutils/pkg/utils"
 	"github.com/stretchr/testify/require"
-	"testing"
-	"time"
 )
 
 func TestPasetoMaker(t *testing.T) {

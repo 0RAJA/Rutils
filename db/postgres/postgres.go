@@ -2,8 +2,9 @@ package postgres
 
 import (
 	"database/sql"
-	_ "github.com/lib/pq"
 	"time"
+
+	_ "github.com/lib/pq"
 )
 
 func PostgresInit(driverName, dataSourceName string, maxOpenConns, maxIdleCOnns int) *sql.DB {

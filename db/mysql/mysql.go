@@ -2,8 +2,9 @@ package mysql
 
 import (
 	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func MysqlInit(driverName, dataSourceName string, maxOpenConns, maxIdleCOnns int) *sql.DB {

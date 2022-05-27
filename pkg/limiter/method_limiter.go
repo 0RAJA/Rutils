@@ -1,9 +1,10 @@
 package limiter
 
 import (
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/juju/ratelimit"
-	"strings"
 )
 
 type MethodLimiter struct {

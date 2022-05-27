@@ -2,8 +2,9 @@ package BSTree_test
 
 import (
 	"fmt"
-	"github.com/0RAJA/Rutils/struct/BSTree"
 	"testing"
+
+	"github.com/0RAJA/Rutils/struct/BSTree"
 )
 
 type T1 int

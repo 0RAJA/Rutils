@@ -2,9 +2,10 @@ package search_test
 
 import (
 	"fmt"
-	"github.com/0RAJA/Rutils/struct/map/search"
 	"strconv"
 	"testing"
+
+	"github.com/0RAJA/Rutils/struct/map/search"
 )
 
 func TestBSTree_Add(t *testing.T) {

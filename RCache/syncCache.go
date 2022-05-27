@@ -1,8 +1,9 @@
 package RCache
 
 import (
-	"github.com/0RAJA/Rutils/RCache/cache"
 	"sync"
+
+	"github.com/0RAJA/Rutils/RCache/cache"
 )
 
 //提供并发保护

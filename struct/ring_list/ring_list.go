@@ -96,4 +96,3 @@ func (r *Ring) Link(s *Ring) *Ring {
 	}
 	return n
 }
-

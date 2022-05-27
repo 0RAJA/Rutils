@@ -2,9 +2,10 @@ package email
 
 import (
 	"fmt"
-	"github.com/0RAJA/Rutils/pkg/times"
 	"testing"
 	"time"
+
+	"github.com/0RAJA/Rutils/pkg/times"
 )
 
 /*
