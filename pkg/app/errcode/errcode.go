@@ -2,61 +2,51 @@ package errcode
 
 import (
 	"fmt"
+	"sync"
+
+	"github.com/jinzhu/copier"
 )
 
-//编写常用的一些错误处理公共方法，标准化我们的错误输出
+// 编写常用的一些错误处理公共方法，标准化我们的错误输出
 
 type Err interface {
-	error
-	HCode() int
+	Error() string
+	ECode() int
+	WithDetails(details ...string) Err
 }
 
-type Error struct {
-	Code     int      `json:"code,omitempty"`
-	Msg      string   `json:"msg,omitempty"`
-	Details  []string `json:"details,omitempty"`
-	httpCode int
-}
+var globalMap map[int]Err
+var once sync.Once
 
-var codes = map[int]string{}
-
-func NewError(code int, msg string, httpCode int) *Error {
-	if _, ok := codes[code]; ok {
-		panic(fmt.Sprintf("错误码 %d 已经存在，请更换一个", code))
+func NewErr(code int, msg string) Err {
+	once.Do(func() {
+		globalMap = make(map[int]Err)
+	})
+	if _, ok := globalMap[code]; ok {
+		panic("错误码已存在")
 	}
-	codes[code] = msg
-	return &Error{
-		Code:     code,
-		Msg:      msg,
-		Details:  []string{},
-		httpCode: httpCode,
-	}
+	err := &myErr{Code: code, Msg: msg}
+	globalMap[code] = err
+	return err
 }
 
-func (e *Error) Error() string {
-	return fmt.Sprintf("错误码：%d, 错误信息: %s, 详细信息:%s", e.SCode(), e.SMsg(), e.SDetails())
+type myErr struct {
+	Code    int      `json:"status_code"` // 状态码，0-成功，其他值-失败
+	Msg     string   `json:"status_msg"`  // 返回状态描述
+	Details []string `json:"-"`           // 详细信息
 }
 
-func (e *Error) SCode() int {
-	return e.Code
+func (m *myErr) ECode() int {
+	return m.Code
 }
 
-func (e *Error) SMsg() string {
-	return e.Msg
+func (m *myErr) Error() string {
+	return fmt.Sprintf("错误码:%v,错误信息:%v,详细信息:%v", m.Code, m.Msg, m.Details)
 }
 
-func (e *Error) HCode() int {
-	return e.httpCode
-}
-
-func (e *Error) SDetails() []string {
-	return e.Details
-}
-
-func (e *Error) WithDetails(details ...string) *Error {
-	newErr := *e
-	for _, d := range details {
-		newErr.Details = append(newErr.Details, d)
-	}
-	return &newErr
+func (m *myErr) WithDetails(details ...string) Err {
+	var newErr = &myErr{}
+	_ = copier.Copy(newErr, m)
+	newErr.Details = append(newErr.Details, details...)
+	return newErr
 }

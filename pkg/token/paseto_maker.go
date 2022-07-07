@@ -1,9 +1,9 @@
 package token
 
 import (
+	"errors"
 	"time"
 
-	"github.com/0RAJA/Rutils/pkg/app/errcode"
 	"github.com/o1egl/paseto"
 	"golang.org/x/crypto/chacha20poly1305"
 )
@@ -23,8 +23,8 @@ func NewPasetoMaker(key []byte) (Maker, error) {
 	}, nil
 }
 
-func (p *PasetoMaker) CreateToken(username string, expireDate time.Duration) (string, *Payload, error) {
-	paload, err := NewPayload(username, expireDate)
+func (p *PasetoMaker) CreateToken(userID int64, expireDate time.Duration) (string, *Payload, error) {
+	paload, err := NewPayload(userID, expireDate)
 	if err != nil {
 		return "", nil, nil
 	}
@@ -42,7 +42,7 @@ func (p *PasetoMaker) VerifyToken(token string) (*Payload, error) {
 		return nil, err
 	}
 	if paload.ExpiredAt.Before(time.Now()) {
-		return nil, errcode.UnauthorizedTokenTimeoutErr
+		return nil, errors.New("超时错误")
 	}
 	return paload, nil
 }

@@ -3,6 +3,8 @@ module github.com/0RAJA/Rutils
 go 1.16
 
 require (
+	github.com/aliyun/aliyun-oss-go-sdk v2.2.4+incompatible
+	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-gonic/gin v1.7.7
@@ -11,11 +13,14 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/google/uuid v1.3.0
+	github.com/jinzhu/copier v0.3.5
 	github.com/juju/ratelimit v1.0.1
 	github.com/lib/pq v1.10.5
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/o1egl/paseto v1.0.0
 	github.com/onsi/gomega v1.19.0 // indirect
+	github.com/satori/go.uuid v1.2.0 // indirect
+	github.com/smartwalle/alipay/v3 v3.1.7
 	github.com/sony/sonyflake v1.0.0
 	github.com/spf13/viper v1.10.1
 	github.com/stretchr/testify v1.7.1

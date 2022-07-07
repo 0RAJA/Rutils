@@ -47,13 +47,12 @@ func (v *ValidErrors) Error() string {
 
 /*
 BindAndValid
-在上述代码中，我们主要是针对入参校验的方法进行了二次封装，
-在 BindAndValid 方法中，通过 ShouldBind 进行参数绑定和入参校验
+参数绑定并翻译错误
 */
 func BindAndValid(c *gin.Context, v interface{}) (ok bool, errs ValidErrors) {
 	err := c.ShouldBind(v)
 	if err != nil {
-		v := c.Value("trans") //翻译
+		v := c.Value("trans") // 翻译
 		trans, _ := v.(ut.Translator)
 		verrs, ok := err.(validator.ValidationErrors)
 		if !ok {

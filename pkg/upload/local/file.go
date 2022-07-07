@@ -1,4 +1,4 @@
-package upload
+package local
 
 import (
 	"crypto/md5"
@@ -62,12 +62,12 @@ func GetFileName(fileName string) (string, string) {
 	return hex.EncodeToString(m.Sum(nil)), ext
 }
 
-//检查文件
+// 检查文件
 
 // CheckSavePath 检查保存目录是否存在
 func CheckSavePath(dst string) bool {
 	_, err := os.Stat(dst)
-	return errors.Is(err, os.ErrNotExist) //文件不存在
+	return errors.Is(err, os.ErrNotExist) // 文件不存在
 }
 
 // checkContainExt 检查文件后缀是否包含在约定的后缀配置项中
@@ -96,7 +96,7 @@ func checkPermission(dst string) bool {
 	return errors.Is(err, os.ErrPermission)
 }
 
-//文件写入/创建的相关操作
+// 文件写入/创建的相关操作
 
 // createSavePath 创建保存路径 perm 表示目录权限
 func createSavePath(dst string, perm os.FileMode) error {
@@ -113,11 +113,11 @@ func saveFile(file *multipart.FileHeader, dst string) error {
 		return err
 	}
 	defer src.Close()
-	out, err := os.Create(dst) //创建文件
+	out, err := os.Create(dst) // 创建文件
 	if err != nil {
 		return err
 	}
 	defer out.Close()
-	_, err = io.Copy(out, src) //写入文件
+	_, err = io.Copy(out, src) // 写入文件
 	return err
 }

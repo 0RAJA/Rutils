@@ -1,57 +1,48 @@
 package app
 
 import (
-	"github.com/gin-gonic/gin"
+	"net/http"
+
+	"github.com/0RAJA/Rutils/pkg/utils"
 )
 
-//分页处理
+// 分页处理
 
-var (
+type Page struct {
 	DefaultPageSize int32
 	MaxPageSize     int32
-	PageKey         string //url中page关键字
-	PageSizeKey     string //pagesize关键字
-)
-
-// Init 初始化默认页数大小和最大页数限制以及查询的关键字
-func Init(defaultPageSize, maxPageSize int32, pageKey, pageSizeKey string) {
-	DefaultPageSize = defaultPageSize
-	MaxPageSize = maxPageSize
-	PageKey = pageKey
-	PageSizeKey = pageSizeKey
+	PageKey         string // url中page关键字
+	PageSizeKey     string // pagesize关键字
 }
 
-type Pager struct {
-	Page      int32 `json:"page,omitempty"`
-	PageSize  int32 `json:"page_size,omitempty"`
-	TotalRows int   `json:"total_rows"`
+// InitPage 初始化默认页数大小和最大页数限制以及查询的关键字
+func InitPage(defaultPageSize, maxPageSize int32, pageKey, pageSizeKey string) *Page {
+	return &Page{
+		DefaultPageSize: defaultPageSize,
+		MaxPageSize:     maxPageSize,
+		PageKey:         pageKey,
+		PageSizeKey:     pageSizeKey,
+	}
 }
 
-// GetPage 获取页数
-func GetPage(c *gin.Context) int32 {
-	page := StrTo(c.Query(PageKey)).MustInt32()
+// GetPageSizeAndOffset 从请求中获取偏移值和页尺寸
+func (p *Page) GetPageSizeAndOffset(r *http.Request) (limit, offset int32) {
+	page := utils.StrTo(r.PostFormValue(p.PageKey)).MustInt32()
 	if page <= 0 {
-		return 1
+		page = 1
 	}
-	return page
-}
-
-// GetPageSize 获取pageSize
-func GetPageSize(c *gin.Context) int32 {
-	pageSize := StrTo(c.Query(PageSizeKey)).MustInt32()
-	if pageSize <= 0 {
-		return DefaultPageSize
+	limit = utils.StrTo(r.PostFormValue(p.PageSizeKey)).MustInt32()
+	if limit <= 0 {
+		limit = p.DefaultPageSize
 	}
-	if pageSize > MaxPageSize {
-		return MaxPageSize
+	if limit > p.MaxPageSize {
+		limit = p.MaxPageSize
 	}
-	return pageSize
-}
-
-// GetPageOffset 通过page和pageSize获取偏移值
-func GetPageOffset(page, pageSize int32) (result int32) {
-	if page > 0 {
-		result = (page - 1) * pageSize
-	}
+	offset = (page - 1) * limit
 	return
+}
+
+// CulOffset 计算偏移值
+func CulOffset(page, pageSize int32) (offset int32) {
+	return (page - 1) * pageSize
 }

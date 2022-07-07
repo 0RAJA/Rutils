@@ -6,24 +6,21 @@ import (
 	"github.com/bwmarrin/snowflake"
 )
 
-//雪花算法
-
-const (
-	Format = "2006-01-02"
-)
-
-var node *snowflake.Node
-
-func Init(startTine string, machineID int64) error {
-	st, err := time.Parse(Format, startTine)
-	if err != nil {
-		return err
-	}
-	snowflake.Epoch = st.UnixNano() / 1000000
-	node, err = snowflake.NewNode(machineID)
-	return nil
+type Snowflake struct {
+	node *snowflake.Node
 }
 
-func GetID() int64 {
-	return node.Generate().Int64()
+// 雪花算法 生成全局唯一ID
+
+func Init(startTime time.Time, machineID int64) (*Snowflake, error) {
+	snowflake.Epoch = startTime.UnixNano() / 1000000
+	node, err := snowflake.NewNode(machineID)
+	if err != nil {
+		return nil, err
+	}
+	return &Snowflake{node: node}, nil
+}
+
+func (sn *Snowflake) GetID() int64 {
+	return sn.node.Generate().Int64()
 }

@@ -14,7 +14,7 @@ const (
 var cstZone *time.Location
 
 func init() {
-	cstZone = time.FixedZone("CST", 8*3600)
+	cstZone = time.FixedZone("UTC", 8*3600)
 }
 
 func Location() *time.Location {
@@ -86,4 +86,12 @@ func FuncTiming(fn func()) time.Duration {
 	startT := GetNowTime()
 	fn()
 	return GetNowTime().Sub(startT)
+}
+
+// 1970-01-01 08:00:00 +0800 CST
+var zeroTime = time.Unix(0, 0)
+
+// IsZero reports whether t represents the zero time instant
+func IsZero(t time.Time) bool {
+	return t.IsZero() || zeroTime.Equal(t)
 }

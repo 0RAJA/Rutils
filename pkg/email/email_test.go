@@ -23,12 +23,12 @@ func TestEmail_SendMail(t *testing.T) {
 		Host:     "smtp.qq.com",
 		Port:     465,
 		IsSSL:    true,
-		UserName: "XXX@qq.com",
-		Password: "",
-		From:     "XXX@qq.com",
+		UserName: "1296643805@qq.com",
+		Password: "yfbxrbthozfnifjd",
+		From:     "1296643805@qq.com",
 	})
-	err := defailtMailer.SendMail( //短信通知
-		[]string{"XXX@qq.com"},
+	err := defailtMailer.SendMail( // 短信通知
+		[]string{"1296643805@qq.com"},
 		fmt.Sprintf("异常抛出，发生时间: %s,%d", times.GetNowDateTimeStr(), time.Now().Unix()),
 		fmt.Sprintf("错误信息: %v", "NO"),
 	)

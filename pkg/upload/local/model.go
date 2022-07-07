@@ -1,4 +1,4 @@
-package upload
+package local
 
 type File struct {
 	Type      FileType
