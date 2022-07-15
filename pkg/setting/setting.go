@@ -10,7 +10,8 @@ import (
 // 使用viper进行配置文件的读取和热加载
 
 type Setting struct {
-	vp *viper.Viper
+	vp  *viper.Viper
+	all interface{}
 }
 
 // NewSetting 初始化本项目的配置的基础属性
@@ -32,16 +33,13 @@ func NewSetting(configName, configType string, configPaths ...string) (*Setting,
 	s.vp.WatchConfig()
 	s.vp.OnConfigChange(func(in fsnotify.Event) {
 		log.Println("更新配置")
-		err := s.vp.Unmarshal(all)
+		err := s.vp.Unmarshal(s.all)
 		if err != nil {
 			log.Fatalln("更新配置失败:" + err.Error())
 		}
 	})
 	return s, nil
 }
-
-// 配置存储记录
-var all interface{}
 
 // BindAll 绑定配置文件
 func (s *Setting) BindAll(v interface{}) error {
@@ -50,6 +48,6 @@ func (s *Setting) BindAll(v interface{}) error {
 	if err != nil {
 		return err
 	}
-	all = v
+	s.all = v
 	return nil
 }
