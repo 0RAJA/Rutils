@@ -15,23 +15,18 @@ type call struct {
 	err error
 }
 
-// group 是 singleflight 的主数据结构，管理不同 key 的请求(call)。
-type group struct {
+// Group 是 singleflight 的主数据结构，管理不同 key 的请求(call)。
+type Group struct {
 	mu sync.Mutex
 	m  map[interface{}]*call
 }
 
-var Group *group
-var once sync.Once
-
-func init() {
-	once.Do(func() {
-		Group = new(group)
-	})
+func NewGroup() *Group {
+	return &Group{m: make(map[interface{}]*call), mu: sync.Mutex{}}
 }
 
 // Do 保证key所对应的fn函数同一时刻只会执行一次
-func (g *group) Do(key interface{}, fn func() (interface{}, error)) (interface{}, error) {
+func (g *Group) Do(key interface{}, fn func() (interface{}, error)) (interface{}, error) {
 	g.mu.Lock()
 	if g.m == nil {
 		g.m = make(map[interface{}]*call)

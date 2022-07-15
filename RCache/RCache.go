@@ -7,10 +7,10 @@ import (
 	"sync"
 
 	"github.com/0RAJA/Rutils/RCache/RErr"
-	"github.com/0RAJA/Rutils/RSync/singleflight"
+	"github.com/0RAJA/Rutils/pkg/singleflight"
 )
 
-//Cache的表层
+// Cache的表层
 
 // Getter 自行实现调用数据库函数
 type Getter interface {
@@ -33,15 +33,15 @@ GetGroup 用来特定名称的 Group，这里使用了只读锁 RLock()，因为
 
 // Group 分布式缓存组
 type Group struct {
-	name      string              //命名
-	getter    Getter              //即缓存未命中时获取源数据的回调(callback)
-	mainCache syncCache           //缓存
-	peers     PeerPicker          //其他节点
-	loader    *singleflight.Group //保证一个请求同一时刻只会执行一次(缓存击破)
+	name      string              // 命名
+	getter    Getter              // 即缓存未命中时获取源数据的回调(callback)
+	mainCache syncCache           // 缓存
+	peers     PeerPicker          // 其他节点
+	loader    *singleflight.Group // 保证一个请求同一时刻只会执行一次(缓存击破)
 }
 
 var (
-	mu     sync.RWMutex //保证groups并发安全
+	mu     sync.RWMutex // 保证groups并发安全
 	groups = make(map[string]*Group)
 )
 
@@ -74,11 +74,11 @@ func (g *Group) Get(key string) (ByteView, error) {
 	if key == "" {
 		return ByteView{}, fmt.Errorf(RErr.KeyIsNil)
 	}
-	//从缓存中获取
+	// 从缓存中获取
 	if v, ok := g.mainCache.get(key); ok {
 		return v, nil
 	}
-	//从指定源获取
+	// 从指定源获取
 	return g.load(key)
 }
 
@@ -92,9 +92,9 @@ func (g *Group) Set(key string, value ByteView) {
 	若是本机节点或失败，则回退到 getLocally()。
 */
 
-//从指定地点指定源获取值
+// 从指定地点指定源获取值
 func (g *Group) load(key string) (value ByteView, err error) {
-	//防止缓存穿透
+	// 防止缓存穿透
 	view, err := g.loader.Do(key, func() (interface{}, error) {
 		if g.peers != nil {
 			if peer, ok := g.peers.PickPeer(key); ok {
@@ -109,7 +109,7 @@ func (g *Group) load(key string) (value ByteView, err error) {
 	return view.(ByteView), err
 }
 
-//从本地指定源获取值
+// 从本地指定源获取值
 func (g *Group) getLocally(key string) (value ByteView, err error) {
 	var bytes []byte
 	if bytes, err = g.getter.Get(key); err == nil {
@@ -119,7 +119,7 @@ func (g *Group) getLocally(key string) (value ByteView, err error) {
 	return value, err
 }
 
-//getFromPeer 方法，使用实现了 PeerGetter 接口的 httpGetter 从访问远程节点，获取缓存值。
+// getFromPeer 方法，使用实现了 PeerGetter 接口的 httpGetter 从访问远程节点，获取缓存值。
 func (g *Group) getFromPeer(peer PeerGetter, key string) (value ByteView, err error) {
 	var bytes []byte
 	if bytes, err = peer.Get(g.name, key); err == nil {
@@ -128,12 +128,12 @@ func (g *Group) getFromPeer(peer PeerGetter, key string) (value ByteView, err er
 	return
 }
 
-//将缓存保存到cache
+// 将缓存保存到cache
 func (g *Group) populateCache(key string, value ByteView) {
 	g.mainCache.add(key, value)
 }
 
-//RegisterPeers 方法，将 实现了 PeerPicker 接口的 HTTPPool 注入到 Group 中。
+// RegisterPeers 方法，将 实现了 PeerPicker 接口的 HTTPPool 注入到 Group 中。
 func (g *Group) RegisterPeers(peers PeerPicker) {
 	if g.peers != nil {
 		panic(RErr.RegisterPeersErr)
@@ -160,15 +160,15 @@ func (g *Group) StartServer(apiAddr, prefix, key string) {
 
 // StartCacheServer 开启分布式缓存 addr 当前主机ip及端口,address 所有主机ip及端口
 func (g *Group) StartCacheServer(addr string, addressMap map[int]string) {
-	//初始化
+	// 初始化
 	pool := NewHTTPPool(addr)
-	//加载其他节点
+	// 加载其他节点
 	address := make([]string, len(addressMap))
 	for _, v := range addressMap {
 		address = append(address, v)
 	}
 	pool.Set(address...)
-	//注入group
+	// 注入group
 	g.RegisterPeers(pool)
 	log.Println("RCache is running at", addr)
 	log.Fatal(http.ListenAndServe(addr, pool))
