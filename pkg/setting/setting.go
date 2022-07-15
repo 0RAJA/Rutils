@@ -1,6 +1,8 @@
 package setting
 
 import (
+	"log"
+
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )
@@ -27,46 +29,27 @@ func NewSetting(configName, configType string, configPaths ...string) (*Setting,
 		return nil, err
 	}
 	s := &Setting{vp: vp}
-	s.WatchSettingChange() // 热监听
+	s.vp.WatchConfig()
+	s.vp.OnConfigChange(func(in fsnotify.Event) {
+		log.Println("更新配置")
+		err := s.vp.Unmarshal(all)
+		if err != nil {
+			log.Fatalln("更新配置失败:" + err.Error())
+		}
+	})
 	return s, nil
 }
 
-// 配置名存储记录
-var sections = make(map[string]interface{})
+// 配置存储记录
+var all interface{}
 
-// ReadSection 绑定配置文件
-func (s *Setting) ReadSection(k string, v interface{}) error {
+// BindAll 绑定配置文件
+func (s *Setting) BindAll(v interface{}) error {
 	// 绑定
-	err := s.vp.UnmarshalKey(k, v)
+	err := s.vp.Unmarshal(v)
 	if err != nil {
 		return err
 	}
-	if _, ok := sections[k]; !ok {
-		sections[k] = v
-	}
+	all = v
 	return nil
-}
-
-// ReloadAllSection 重新读取配置文件
-func (s *Setting) ReloadAllSection() error {
-	for k, v := range sections {
-		err := s.ReadSection(k, v)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// WatchSettingChange 监听配置文件
-func (s *Setting) WatchSettingChange() {
-	go func() {
-		s.vp.WatchConfig()
-		s.vp.OnConfigChange(func(in fsnotify.Event) {
-			err := s.ReloadAllSection()
-			if err != nil {
-				panic(err)
-			}
-		})
-	}()
 }
