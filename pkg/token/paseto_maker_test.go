@@ -1,11 +1,13 @@
 package token
 
 import (
+	"encoding/json"
 	"math/rand"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/0RAJA/Rutils/pkg/utils"
 	"github.com/stretchr/testify/require"
 )
 
@@ -19,10 +21,17 @@ func TestPasetoMaker(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, maker)
 	userID := RandomInt(1, 1000)
+	userName := utils.RandomOwner()
+	content := M{
+		UserID:   userID,
+		UserName: userName,
+	}
 	duration := time.Minute
 	issuedAt := time.Now()
 	expiredAt := issuedAt.Add(duration)
-	token, _, err := maker.CreateToken(userID, duration)
+	data, err := json.Marshal(content)
+	require.NoError(t, err)
+	token, _, err := maker.CreateToken(data, duration)
 
 	require.NoError(t, err)
 	require.NotEmpty(t, token)
@@ -30,7 +39,10 @@ func TestPasetoMaker(t *testing.T) {
 	payload, err := maker.VerifyToken(token)
 	require.NoError(t, err)
 	require.NotEmpty(t, payload)
-	require.Equal(t, payload.UserID, userID)
+	result := M{}
+	err = json.Unmarshal(payload.Content, &result)
+	require.NoError(t, err)
+	require.Equal(t, content, result)
 	require.WithinDuration(t, payload.IssuedAt, issuedAt, time.Millisecond)
 
 	require.WithinDuration(t, payload.ExpiredAt, expiredAt, time.Second)
@@ -41,8 +53,15 @@ func TestMaker(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, maker)
 	userID := RandomInt(1, 1000)
+	userName := utils.RandomOwner()
+	content := M{
+		UserID:   userID,
+		UserName: userName,
+	}
+	data, err := json.Marshal(content)
+	require.NoError(t, err)
 	duration := time.Second
-	token, _, err := maker.CreateToken(userID, duration)
+	token, _, err := maker.CreateToken(data, duration)
 	require.NoError(t, err)
 	result, err := maker.VerifyToken(token)
 	require.NoError(t, err)
