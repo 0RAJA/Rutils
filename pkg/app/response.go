@@ -46,11 +46,7 @@ func (r *Response) Reply(err errcode.Err, datas ...interface{}) {
 }
 
 // ReplyList 响应列表数据
-func (r *Response) ReplyList(err errcode.Err, datas []interface{}, total int64) {
-	var data interface{}
-	if len(datas) > 0 {
-		data = datas[0]
-	}
+func (r *Response) ReplyList(err errcode.Err, total int64, data interface{}) {
 	if err == nil {
 		err = errcode.StatusOK
 	} else {
