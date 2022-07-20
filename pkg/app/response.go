@@ -20,7 +20,7 @@ type State struct {
 
 type List struct {
 	List  interface{} `json:"list"`
-	Total int         `json:"total"`
+	Total int64       `json:"total"`
 }
 
 func NewResponse(ctx *gin.Context) *Response {
@@ -46,7 +46,7 @@ func (r *Response) Reply(err errcode.Err, datas ...interface{}) {
 }
 
 // ReplyList 响应列表数据
-func (r *Response) ReplyList(err errcode.Err, datas []interface{}, total int) {
+func (r *Response) ReplyList(err errcode.Err, datas []interface{}, total int64) {
 	var data interface{}
 	if len(datas) > 0 {
 		data = datas[0]
