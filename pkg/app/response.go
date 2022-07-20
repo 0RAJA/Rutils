@@ -19,13 +19,15 @@ type State struct {
 }
 
 type List struct {
-	List interface{} `json:"list"`
+	List  interface{} `json:"list"`
+	Total int         `json:"total"`
 }
 
 func NewResponse(ctx *gin.Context) *Response {
 	return &Response{c: ctx}
 }
 
+// Reply 响应单个数据
 func (r *Response) Reply(err errcode.Err, datas ...interface{}) {
 	var data interface{}
 	if len(datas) > 0 {
@@ -43,7 +45,8 @@ func (r *Response) Reply(err errcode.Err, datas ...interface{}) {
 	})
 }
 
-func (r *Response) ReplyList(err errcode.Err, datas ...interface{}) {
+// ReplyList 响应列表数据
+func (r *Response) ReplyList(err errcode.Err, datas []interface{}, total int) {
 	var data interface{}
 	if len(datas) > 0 {
 		data = datas[0]
@@ -56,6 +59,6 @@ func (r *Response) ReplyList(err errcode.Err, datas ...interface{}) {
 	r.c.JSON(http.StatusOK, State{
 		Code: err.ECode(),
 		Msg:  err.Error(),
-		Data: List{List: data},
+		Data: List{List: data, Total: total},
 	})
 }
