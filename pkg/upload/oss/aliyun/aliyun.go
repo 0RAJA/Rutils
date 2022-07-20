@@ -57,6 +57,9 @@ func (o *OSS) UploadFile(file *multipart.FileHeader) (string, string, error) {
 // DeleteFile 删除文件
 // 通过key删除对应文件
 func (o *OSS) DeleteFile(key ...string) (oss.DeleteObjectsResult, error) {
+	if len(key) == 0 {
+		return oss.DeleteObjectsResult{}, nil
+	}
 	bucket, err := o.newBucket()
 	if err != nil {
 		return oss.DeleteObjectsResult{}, errors.New("function OSS.NewBucket() Failed, err:" + err.Error())
