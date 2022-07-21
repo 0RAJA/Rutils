@@ -27,11 +27,11 @@ func InitPage(defaultPageSize, maxPageSize int32, pageKey, pageSizeKey string) *
 
 // GetPageSizeAndOffset 从请求中获取偏移值和页尺寸
 func (p *Page) GetPageSizeAndOffset(r *http.Request) (limit, offset int32) {
-	page := utils.StrTo(r.PostFormValue(p.PageKey)).MustInt32()
+	page := utils.StrTo(r.FormValue(p.PageKey)).MustInt32()
 	if page <= 0 {
 		page = 1
 	}
-	limit = utils.StrTo(r.PostFormValue(p.PageSizeKey)).MustInt32()
+	limit = utils.StrTo(r.FormValue(p.PageSizeKey)).MustInt32()
 	if limit <= 0 {
 		limit = p.DefaultPageSize
 	}
