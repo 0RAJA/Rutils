@@ -22,11 +22,11 @@ import (
 type Hash func(data []byte) uint32
 
 type Map struct {
-	mu       sync.RWMutex   //并发安全
-	hash     Hash           //Hash函数
-	replicas int            //虚拟节点倍数
-	keys     []int          //哈希环 存着节点的hash值
-	hashMap  map[int]string //虚拟节点与真实节点的映射表,键是虚拟节点的哈希值,值是真实节点的名称
+	mu       sync.RWMutex   // 并发安全
+	hash     Hash           // Hash函数
+	replicas int            // 虚拟节点倍数
+	keys     []int          // 哈希环 存着节点的hash值
+	hashMap  map[int]string // 虚拟节点与真实节点的映射表,键是虚拟节点的哈希值,值是真实节点的名称
 }
 
 // New 构造函数 允许自定义hash函数和节点倍数
@@ -45,9 +45,9 @@ func (m *Map) Add(keys ...string) {
 	for _, key := range keys {
 		for i := 0; i < m.replicas; i++ {
 			hash := int(m.hash([]byte(strconv.Itoa(i) + key)))
-			//加入哈希环
+			// 加入哈希环
 			m.keys = append(m.keys, hash)
-			//建立映射
+			// 建立映射
 			m.hashMap[hash] = key
 		}
 	}
@@ -62,7 +62,7 @@ func (m *Map) Get(key string) string {
 		return ""
 	}
 	hash := int(m.hash([]byte(key)))
-	//通过hash值找到在key之后的第一个节点,因为可能i为n,所以取余,使其称为环
+	// 通过hash值找到在key之后的第一个节点,因为可能i为n,所以取余,使其称为环
 	idx := sort.Search(len(m.keys), func(i int) bool {
 		return m.keys[i] >= hash
 	})

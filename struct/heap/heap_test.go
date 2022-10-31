@@ -1,24 +1,27 @@
 package heap
 
 import (
-	"fmt"
 	"math/rand"
+	"sort"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewHeap(t *testing.T) {
 	heap := NewHeap()
-	for i := 0; i < 20; i++ {
+	nums := make([]int, 20)
+	for i := range nums {
 		time.Sleep(1000 * time.Microsecond)
-		heap.Push(randNum())
+		nums[i] = randNum()
 	}
-	fmt.Println(heap.Array[1 : heap.Len+1])
-	//for i := 0; i < 20; i++ {
-	//	fmt.Print(heap.Pop(), " ")
-	//}
+	for i := range nums {
+		heap.Push(nums[i])
+	}
 	heap.HeapSort()
-	fmt.Println(heap.Array[1 : heap.Len+1])
+	sort.Ints(nums)
+	require.EqualValues(t, nums, heap.Array[1:heap.Len+1])
 }
 
 func randNum() int {

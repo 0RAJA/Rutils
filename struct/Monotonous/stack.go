@@ -32,9 +32,11 @@ func (s *Stack) PopAssist(v Comparable) {
 }
 
 func (s *Stack) PushAssist(v Comparable) {
+	// min：只有比当前小才能进
 	if v.CompareTo(s.assistMin.Back().Value.(Comparable)) < 0 {
 		s.assistMin.PushBack(v)
 	}
+	// max：只有比当前大才能进
 	if v.CompareTo(s.assistMax.Back().Value.(Comparable)) > 0 {
 		s.assistMax.PushBack(v)
 	}

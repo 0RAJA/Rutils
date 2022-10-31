@@ -32,10 +32,12 @@ func (q *Queue) PopAssist(v Comparable) {
 }
 
 func (q *Queue) PushAssist(v Comparable) {
+	// min: 从后往前剔除比当前值大的
 	for q.assistMin.Len() > 0 && v.CompareTo(q.assistMin.Back().Value.(Comparable)) < 0 {
 		q.assistMin.Remove(q.assistMin.Back())
 	}
 	q.assistMin.PushBack(v)
+	// max：从后往前剔除比当前值小的
 	for q.assistMax.Len() > 0 && v.CompareTo(q.assistMax.Back().Value.(Comparable)) > 0 {
 		q.assistMax.Remove(q.assistMax.Back())
 	}

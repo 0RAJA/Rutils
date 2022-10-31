@@ -70,7 +70,6 @@ func InsertSort(list []int, cmp func(i, j int) bool) {
 func ShellSort(list []int, cmp func(i, j int) bool) {
 	// 数组长度
 	n := len(list)
-
 	// 每次减半，直到步长为 1
 	for step := n / 2; step >= 1; step /= 2 {
 		// 开始插入排序，每一轮的步长为 step
@@ -138,7 +137,7 @@ func MergeSort2(array []int, begin int, end int) {
 	}
 }
 
-// QSort 快排 nlogn
+// QSort 快排 nlogn cmp(a,b) 比较的是值
 func QSort(array []int, low, high int, cmp func(a, b int) bool) {
 	i, j := low, high
 	if low >= high {
@@ -162,12 +161,37 @@ func QSort(array []int, low, high int, cmp func(a, b int) bool) {
 	QSort(array, low+1, j, cmp)
 }
 
+// QSortStable 稳定快排 cmp == true 从小到大
+func QSortStable(array []int, b bool) {
+	if len(array) <= 1 {
+		return
+	}
+	length := len(array)
+	arr1 := make([]int, 0, length)
+	arr2 := make([]int, 0, length)
+	k := array[0]
+	for idx := 0; idx < length; idx++ {
+		if b && array[idx] > k {
+			arr2 = append(arr2, array[idx])
+		} else {
+			arr1 = append(arr1, array[idx])
+		}
+	}
+	mid := len(arr1)
+	arr1 = append(arr1, arr2...)
+	for t := 0; t < length; t++ {
+		array[t] = arr1[t]
+	}
+	QSortStable(array[:mid], b)
+	QSortStable(array[mid+1:], b)
+}
+
 type ListNode struct {
 	Val  int
 	Next *ListNode
 }
 
-// SortList 给出链表的头节点和最后一个有效节点的下一个节点
+// SortList 给出链表的第一个有效节点和最后一个有效节点的下一个节点
 func SortList(head, tail *ListNode) *ListNode {
 	// 0
 	if head == nil {
@@ -194,6 +218,7 @@ func SortList(head, tail *ListNode) *ListNode {
 
 func mergeList(head1, head2 *ListNode) *ListNode {
 	dummyHead := &ListNode{}
+	// 合并两个有序链表
 	t, t1, t2 := dummyHead, head1, head2
 	for t1 != nil && t2 != nil {
 		if t1.Val <= t2.Val {

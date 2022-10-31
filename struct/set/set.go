@@ -2,68 +2,68 @@ package set
 
 import "sync"
 
-// set 集合
-type set struct {
-	m            map[interface{}]struct{} //字典实现
-	sync.RWMutex                          //锁
+// Set 集合
+type Set struct {
+	m  map[interface{}]struct{} // 字典实现
+	rw sync.RWMutex             // 锁
 }
 
-func New() *set {
-	return &set{
-		m:       make(map[interface{}]struct{}),
-		RWMutex: sync.RWMutex{},
+func New() *Set {
+	return &Set{
+		m:  make(map[interface{}]struct{}),
+		rw: sync.RWMutex{},
 	}
 }
 
-func NewSet(cap int) *set {
+func NewSet(cap int) *Set {
 	var temp map[interface{}]struct{}
 	if cap <= 0 {
 		temp = make(map[interface{}]struct{})
 	} else {
 		temp = make(map[interface{}]struct{}, cap)
 	}
-	return &set{
-		m:       temp,
-		RWMutex: sync.RWMutex{},
+	return &Set{
+		m:  temp,
+		rw: sync.RWMutex{},
 	}
 }
 
-func (s *set) Add(item interface{}) {
-	s.Lock()
-	defer s.Unlock()
+func (s *Set) Add(item interface{}) {
+	s.rw.Lock()
+	defer s.rw.Unlock()
 	s.m[item] = struct{}{}
 }
 
-func (s *set) Remove(item int) {
-	s.Lock()
-	defer s.Unlock()
+func (s *Set) Remove(item int) {
+	s.rw.Lock()
+	defer s.rw.Unlock()
 	delete(s.m, item)
 }
 
-func (s *set) Has(item int) bool {
-	s.RLock()
-	defer s.RUnlock()
+func (s *Set) Has(item int) bool {
+	s.rw.RLock()
+	defer s.rw.RUnlock()
 	_, ok := s.m[item]
 	return ok
 }
 
-func (s *set) Len() int {
+func (s *Set) Len() int {
 	return len(s.m)
 }
 
-func (s *set) IsEmpty() bool {
+func (s *Set) IsEmpty() bool {
 	return s.Len() == 0
 }
 
-func (s *set) Clear() {
-	s.Lock()
-	defer s.Unlock()
+func (s *Set) Clear() {
+	s.rw.Lock()
+	defer s.rw.Unlock()
 	s.m = map[interface{}]struct{}{}
 }
 
-func (s *set) List() (list []interface{}) {
-	s.RLock()
-	defer s.RUnlock()
+func (s *Set) List() (list []interface{}) {
+	s.rw.RLock()
+	defer s.rw.RUnlock()
 	for item := range s.m {
 		list = append(list, item)
 	}

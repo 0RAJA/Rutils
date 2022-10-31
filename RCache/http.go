@@ -11,9 +11,11 @@ import (
 
 	"github.com/0RAJA/Rutils/RCache/RErr"
 	"github.com/0RAJA/Rutils/RCache/consistenthash"
+	pb "github.com/0RAJA/Rutils/RCache/geecachepb"
+	"github.com/golang/protobuf/proto"
 )
 
-//提供被其他节点访问的能力(基于http)
+// 提供被其他节点访问的能力(基于http)
 
 const (
 	// DefBasePath 默认路由前缀
@@ -26,37 +28,46 @@ const (
 
 // HttpPool 节点间 HTTP 通信的核心数据结构
 type HttpPool struct {
-	self        string                 //self 用来记录自己的地址，包括 主机名/ip 和 端口。eg:"http://localhost:9999"
-	basePath    string                 //basePath，作为节点间通讯地址的前缀
-	mu          sync.RWMutex           //并发安全
-	peersMap    *consistenthash.Map    //来根据具体的 key 选择节点。
-	httpGetters map[string]*httpGetter //映射远程节点与对应的 httpGetter。每一个远程节点对应一个 httpGetter，因为 httpGetter 与远程节点的地址 baseURL 有关
+	self        string                 // self 用来记录自己的地址，包括 主机名/ip 和 端口。eg:"http://localhost:9999"
+	basePath    string                 // basePath，作为节点间通讯地址的前缀
+	mu          sync.RWMutex           // 并发安全
+	peersMap    *consistenthash.Map    // 来根据具体的 key 选择节点。
+	httpGetters map[string]*httpGetter // 映射远程节点与对应的 httpGetter。每一个远程节点对应一个 httpGetter，因为 httpGetter 与远程节点的地址 baseURL 有关
 }
 
-//客户端
+// 客户端
 type httpGetter struct {
 	baseURL string
 }
 
 // Get 给远程节点发起请求
-func (hg *httpGetter) Get(group string, key string) ([]byte, error) {
-	u := fmt.Sprintf("%v%v/%v", hg.baseURL, url.QueryEscape(group), url.QueryEscape(key))
-	//发起请求
+func (hg *httpGetter) Get(in *pb.Request, out *pb.Response) error {
+	u := fmt.Sprintf(
+		"%v%v/%v",
+		hg.baseURL,
+		url.QueryEscape(in.GetGroup()),
+		url.QueryEscape(in.GetKey()),
+	)
+	// 发起请求
 	res, err := http.Get(u)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer res.Body.Close()
-	//判断状态码
+	// 判断状态码
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("server returned: %v", res.Status)
+		return fmt.Errorf("server returned: %v", res.Status)
 	}
-	//读取信息
+	// 读取信息
 	bytes, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return nil, fmt.Errorf("reading response body: %v", err)
+		return fmt.Errorf("reading response body: %v", err)
 	}
-	return bytes, nil
+	// 解析proto
+	if err = proto.Unmarshal(bytes, out); err != nil {
+		return fmt.Errorf("decoding response body: %v", err)
+	}
+	return nil
 }
 
 func NewHTTPPool(self string) *HttpPool {
@@ -67,24 +78,24 @@ func (hp *HttpPool) Log(format string, v ...interface{}) {
 	log.Printf("[Server %s] %s", hp.self, fmt.Sprintf(format, v...))
 }
 
-//回应远程请求
+// 回应远程请求
 func (hp *HttpPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if !strings.HasPrefix(r.URL.Path, hp.basePath) {
 		http.Error(w, RErr.BadRequest, http.StatusNotFound)
 		return
-		//panic(RErr.UrlPathErr + r.URL.LocalPath)
+		// panic(RErr.UrlPathErr + r.URL.LocalPath)
 	}
 	hp.Log("%s %s", r.Method, r.URL.Path)
 	// /<basepath>/<groupname>/<key> required 解析url
 	parts := strings.SplitN(r.URL.Path[len(hp.basePath):], "/", 2)
 	if len(parts) != 2 {
-		//返回错误
+		// 返回错误
 		http.Error(w, RErr.BadRequest, http.StatusBadRequest)
 		return
 	}
 	groupName := parts[0]
 	key := parts[1]
-	//获取缓存组
+	// 获取缓存组
 	group := GetGroup(groupName)
 	if group == nil {
 		http.Error(w, RErr.NoGroup, http.StatusNotFound)
@@ -92,24 +103,32 @@ func (hp *HttpPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	view, err := group.Get(key)
 	if err != nil {
-		//服务器内部错误
+		// 服务器内部错误
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	//设置响应头中的内容类型为二进制流数据
+	// proto解析
+	body, err := proto.Marshal(&pb.Response{Value: view.ByteSlice()})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// 设置响应头中的内容类型为二进制流数据
 	w.Header().Set("Content-Type", "application/octet-stream")
-	w.Write(view.ByteSlice())
+	if _, err := w.Write(body); err != nil {
+		log.Println(err)
+	}
 }
 
 // Set 存储其他节点
 func (hp *HttpPool) Set(peers ...string) {
 	hp.mu.Lock()
 	defer hp.mu.Unlock()
-	//将节点存入hash环
+	// 将节点存入hash环
 	hp.peersMap = consistenthash.New(DefReplicas, nil)
 	hp.peersMap.Add(peers...)
 	hp.httpGetters = make(map[string]*httpGetter, len(peers))
-	//为每一个节点创建了一个 HTTP 客户端 httpGetter
+	// 为每一个节点创建了一个 HTTP 客户端 httpGetter
 	for _, peer := range peers {
 		hp.httpGetters[peer] = &httpGetter{baseURL: DefHTTP + peer + hp.basePath}
 	}

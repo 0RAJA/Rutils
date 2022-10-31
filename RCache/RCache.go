@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/0RAJA/Rutils/RCache/RErr"
+	pb "github.com/0RAJA/Rutils/RCache/geecachepb"
 	"github.com/0RAJA/Rutils/pkg/singleflight"
 )
 
@@ -121,9 +122,13 @@ func (g *Group) getLocally(key string) (value ByteView, err error) {
 
 // getFromPeer 方法，使用实现了 PeerGetter 接口的 httpGetter 从访问远程节点，获取缓存值。
 func (g *Group) getFromPeer(peer PeerGetter, key string) (value ByteView, err error) {
-	var bytes []byte
-	if bytes, err = peer.Get(g.name, key); err == nil {
-		value = ByteView{cloneBytes(bytes)}
+	req := &pb.Request{
+		Group: g.name,
+		Key:   key,
+	}
+	res := &pb.Response{}
+	if err = peer.Get(req, res); err == nil {
+		value = ByteView{res.Value}
 	}
 	return
 }
