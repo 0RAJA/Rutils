@@ -16,16 +16,19 @@ func (q *Queue) Pop() interface{} {
 	q.nums.Remove(t)
 	return t.Value
 }
+
 func (q *Queue) Top() interface{} {
 	if q.nums.Len() <= 0 {
 		return nil
 	}
 	return q.nums.Front().Value
 }
+
 func (q *Queue) PopAssist(v Comparable) {
 	if v.CompareTo(q.assistMin.Front().Value.(Comparable)) == 0 {
 		q.assistMin.Remove(q.assistMin.Front())
 	}
+	// 移除最大
 	if v.CompareTo(q.assistMax.Front().Value.(Comparable)) == 0 {
 		q.assistMax.Remove(q.assistMax.Front())
 	}

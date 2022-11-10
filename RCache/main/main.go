@@ -1,10 +1,11 @@
 package main
 
 import (
-	"Rutils/RCache"
 	"flag"
 	"fmt"
 	"log"
+
+	"github.com/0RAJA/Rutils/RCache"
 )
 
 var db = map[string]string{
@@ -13,7 +14,7 @@ var db = map[string]string{
 	"Sam":  "3",
 }
 
-//创建缓存组
+// 创建缓存组
 func createGroup() *RCache.Group {
 	return RCache.NewGroup("scores", 2<<10, RCache.GetterFunc(func(key string) ([]byte, error) {
 		log.Println("[SlowDB] search key", key)
@@ -37,13 +38,13 @@ func main() {
 		8002: "localhost:8002",
 		8003: "localhost:8003",
 	}
-	//创建缓存组
+	// 创建缓存组
 	group := createGroup()
 	fmt.Println(group.Get("Tom"))
-	//开启辅助端口
+	// 开启辅助端口
 	if api {
 		go group.StartServer(apiAddr, "/api", "key")
 	}
-	//开启分布式缓存
+	// 开启分布式缓存
 	group.StartCacheServer(addrMap[port], addrMap)
 }

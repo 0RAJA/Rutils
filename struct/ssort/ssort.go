@@ -49,7 +49,7 @@ func SelectSort(list []int, cmp func(i, j int) bool) {
 }
 
 // InsertSort 插入排序 n^2
-func InsertSort(list []int, cmp func(i, j int) bool) {
+func InsertSort(list []int, cmp func(num1, num2 int) bool) {
 	n := len(list)
 	// 进行 N-1 轮迭代
 	for i := 1; i <= n-1; i++ {
@@ -67,7 +67,7 @@ func InsertSort(list []int, cmp func(i, j int) bool) {
 }
 
 // ShellSort 希尔排序
-func ShellSort(list []int, cmp func(i, j int) bool) {
+func ShellSort(list []int, cmp func(num1, num2 int) bool) {
 	// 数组长度
 	n := len(list)
 	// 每次减半，直到步长为 1
@@ -138,27 +138,28 @@ func MergeSort2(array []int, begin int, end int) {
 }
 
 // QSort 快排 nlogn cmp(a,b) 比较的是值
-func QSort(array []int, low, high int, cmp func(a, b int) bool) {
+func QSort(array []int, cmp func(num1, num2 int) bool) {
+	low, high := 0, len(array)-1
 	i, j := low, high
 	if low >= high {
 		return
 	}
 	k := array[low]
 	for low < high {
-		for ; low < high && !cmp(k, array[high]); high-- {
+		for ; low < high && !cmp(array[high], k); high-- {
 		}
-		if cmp(k, array[high]) {
+		if cmp(array[high], k) {
 			array[low] = array[high]
 		}
-		for ; low < high && cmp(k, array[low]); low++ {
+		for ; low < high && !cmp(k, array[low]); low++ {
 		}
-		if !cmp(k, array[low]) {
+		if cmp(k, array[low]) {
 			array[high] = array[low]
 		}
 	}
 	array[low] = k
-	QSort(array, i, low-1, cmp)
-	QSort(array, low+1, j, cmp)
+	QSort(array[i:low+1], cmp)
+	QSort(array[low+1:j+1], cmp)
 }
 
 // QSortStable 稳定快排 cmp == true 从小到大
@@ -171,7 +172,7 @@ func QSortStable(array []int, b bool) {
 	arr2 := make([]int, 0, length)
 	k := array[0]
 	for idx := 0; idx < length; idx++ {
-		if b && array[idx] > k {
+		if b && array[idx] >= k {
 			arr2 = append(arr2, array[idx])
 		} else {
 			arr1 = append(arr1, array[idx])
@@ -182,8 +183,12 @@ func QSortStable(array []int, b bool) {
 	for t := 0; t < length; t++ {
 		array[t] = arr1[t]
 	}
-	QSortStable(array[:mid], b)
-	QSortStable(array[mid+1:], b)
+	if mid > 0 {
+		QSortStable(array[:mid], b)
+	}
+	if mid < len(array)-1 {
+		QSortStable(array[mid+1:], b)
+	}
 }
 
 type ListNode struct {
@@ -236,4 +241,37 @@ func mergeList(head1, head2 *ListNode) *ListNode {
 		t.Next = t2
 	}
 	return dummyHead.Next
+}
+
+// SearchMiddle 寻找中位数
+func SearchMiddle(arr []int, start, end int) int {
+	k := arr[start]
+	i, j := start, end
+	if start >= end {
+		return arr[start]
+	}
+	for i < j {
+		for i < end && arr[i] <= k {
+			i++
+		}
+		for j > start && arr[j] >= k {
+			j--
+		}
+		if i < j {
+			arr[i], arr[j] = arr[j], arr[i]
+		} else {
+			break
+		}
+	}
+	if k > arr[j] {
+		arr[start] = arr[j]
+		arr[j] = k
+	}
+	if j == (len(arr)-1)/2 {
+		return arr[j]
+	} else if j < (len(arr)-1)/2 {
+		return SearchMiddle(arr, j+1, end)
+	} else {
+		return SearchMiddle(arr, start, j-1)
+	}
 }
