@@ -8,6 +8,6 @@ import (
 
 // OSS 对象存储接口
 type OSS interface {
-	UploadFile(file *multipart.FileHeader) (string, string, error)
+	UploadFile(file *multipart.FileHeader, options []oss.Option) (string, string, error)
 	DeleteFile(key ...string) (oss.DeleteObjectsResult, error)
 }
